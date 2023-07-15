@@ -5,8 +5,9 @@ const db = require("../models"); // finds index.js file by default, no need to d
 const Cart = db.cart;
 
 const createCart = async (req, res) => {
-  const { size, quantity } = req.body;
+  const { productId, size, quantity } = req.body;
   const cart = await Cart.create({
+    productId,
     size,
     quantity,
   });

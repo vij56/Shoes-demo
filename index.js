@@ -9,14 +9,14 @@ dotenv.config();
 
 const productRouter = require("./routes/productRoutes.js");
 const cartRouter = require("./routes/cartRoutes.js");
+const orderRouter = require("./routes/orderRoutes.js");
 // const reviewRouter = require("./routes/reviewRoutes.js");
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/api", productRouter, cartRouter);
-// app.use("/api/reviews", reviewRouter);
+app.use("/api", productRouter, cartRouter, orderRouter);
 
 const port = process.env.PORT || 8080;
 

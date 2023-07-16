@@ -3,6 +3,7 @@ const db = require("../models"); // finds index.js file by default, no need to d
 
 // create main model
 const Cart = db.cart;
+const Product = db.products;
 
 const createCart = async (req, res) => {
   const { productId, size, quantity } = req.body;
@@ -15,15 +16,24 @@ const createCart = async (req, res) => {
 };
 
 const getCart = async (req, res) => {
-  const { id } = req.params;
-  const cart = await Cart.findOne({ where: { id: id } });
-  res.status(200).json({ cart });
+  const id = parseInt(req.params.id);
+  const data = await Product.findOne({
+    attributes: ["image", "title", "price"],
+    include: [
+      {
+        model: Cart,
+        attributes: ["size", "quantity"],
+      },
+    ],
+    where: { id: id },
+  });
+  res.status(201).json({ data });
 };
 
 const updateCart = async (req, res) => {
-  const { id } = req.params;
+  const cartId = parseInt(req.params.cartId);
   const cart = await Cart.update(req.body, {
-    where: { id: id },
+    where: { id: cartId },
   });
   res.status(200).json({ cart });
 };

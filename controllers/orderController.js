@@ -3,6 +3,8 @@ const db = require("../models"); // finds index.js file by default, no need to d
 
 // create main model
 const Order = db.order;
+const Cart = db.cart;
+const Product = db.products;
 
 const createOrder = async (req, res) => {
   const {
@@ -36,7 +38,21 @@ const createOrder = async (req, res) => {
 
 const retrieveOrder = async (req, res) => {
   const { id } = req.params;
-  const order = await Order.findOne({ where: { id: id } });
+  const order = await Order.findOne({
+    include: [
+      {
+        model: Product,
+        attributes: ["title", "price"],
+        include: [
+          {
+            model: Cart,
+            attributes: ["size", "quantity"],
+          },
+        ],
+      },
+    ],
+    where: { id: id },
+  });
   res.status(200).json({ order });
 };
 

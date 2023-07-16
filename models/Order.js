@@ -1,5 +1,10 @@
 module.exports = (sequelize, DataTypes) => {
   const Order = sequelize.define("order", {
+    // id: {
+    //   type: DataTypes.INTEGER,
+    //   autoIncrement: true,
+    //   primaryKey: true,
+    // },
     firstName: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -42,9 +47,12 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       defaultValue: "Cash On Delivery",
     },
-    productId: {
-      type: DataTypes.INTEGER,
-    },
+    // productId: {
+    //   type: DataTypes.INTEGER,
+    // },
+    // cartId: {
+    //   type: DataTypes.INTEGER,
+    // },
   });
   return Order;
 };

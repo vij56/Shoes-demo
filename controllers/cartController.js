@@ -8,8 +8,12 @@ const Product = db.products;
 const createCart = async (req, res) => {
   const { productId, size, quantity } = req.body;
   const cart = await Cart.findAll();
-  let filteredProduct = cart.filter((item) => item.productId === productId);
-  if (cart.length > 0 && filteredProduct[0]?.productId === productId && filteredProduct[0]?.size === size) {
+  let filteredProduct = cart.filter(item => item.productId === productId);
+  if (
+    cart.length > 0 &&
+    filteredProduct[0]?.productId === productId &&
+    filteredProduct[0]?.size === size
+  ) {
     const updatedCart = await Cart.update(
       { quantity: filteredProduct[0]?.quantity + quantity },
       {
@@ -29,6 +33,7 @@ const createCart = async (req, res) => {
 
 const getAllProductsFromCart = async (req, res) => {
   const cartProducts = await Cart.findAll({
+    attributes: ["size", "quantity"],
     include: [
       {
         model: Product,

@@ -8,11 +8,14 @@ const Product = db.products;
 const createCart = async (req, res) => {
   const { productId, size, quantity } = req.body;
   const cart = await Cart.findAll();
-  let filteredproduct = cart.filter(item => item.productId === productId);
-  if (cart.length > 0 && filteredproduct[0]?.productId === productId) {
-    const updatedCart = await Cart.update(req.body, {
-      where: { id: filteredproduct[0].id },
-    });
+  let filteredProduct = cart.filter((item) => item.productId === productId);
+  if (cart.length > 0 && filteredProduct[0]?.productId === productId && filteredProduct[0]?.size === size) {
+    const updatedCart = await Cart.update(
+      { quantity: filteredProduct[0]?.quantity + quantity },
+      {
+        where: { id: filteredProduct[0].id },
+      }
+    );
     return res.status(201).json({ updatedCart });
   } else {
     const updatedCart = await Cart.create({
@@ -24,19 +27,30 @@ const createCart = async (req, res) => {
   }
 };
 
+const getAllProductsFromCart = async (req, res) => {
+  const cartProducts = await Cart.findAll({
+    include: [
+      {
+        model: Product,
+        attributes: ["image", "title", "price"],
+      },
+    ],
+  });
+  res.status(201).json({ cartProducts });
+};
+
 const getCart = async (req, res) => {
-  // const id = req.params.id;
-  const data = await Cart
-    .findAll
-    // attributes: ["image", "title", "price"],
-    // include: [
-    //   {
-    //     model: Cart,
-    //     attributes: ["size", "quantity"],
-    //   },
-    // ],
-    // where: { id: id },
-    ();
+  const id = req.params.id;
+  const data = await Cart.findAll({
+    attributes: ["size", "quantity"],
+    include: [
+      {
+        model: Product,
+        attributes: ["image", "title", "price"],
+      },
+    ],
+    where: { id: id },
+  });
   res.status(201).json(data);
 };
 
@@ -64,4 +78,5 @@ module.exports = {
   getCart,
   updateCart,
   deleteCart,
+  getAllProductsFromCart,
 };

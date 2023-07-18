@@ -7,38 +7,38 @@ module.exports = (sequelize, DataTypes) => {
     // },
     firstName: {
       type: DataTypes.STRING,
-      allowNull: false,
+      // allowNull: false,
     },
     lastName: {
       type: DataTypes.STRING,
-      allowNull: false,
+      // allowNull: false,
     },
     companyName: {
       type: DataTypes.STRING,
     },
     streetAddress: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      // allowNull: false,
     },
     city: {
       type: DataTypes.STRING,
-      allowNull: false,
+      // allowNull: false,
     },
     state: {
       type: DataTypes.STRING,
-      allowNull: false,
+      // allowNull: false,
     },
     pinCode: {
       type: DataTypes.BIGINT,
-      allowNull: false,
+      // allowNull: false,
     },
     phoneNumber: {
       type: DataTypes.BIGINT,
-      allowNull: false,
+      // allowNull: false,
     },
     emailAddress: {
       type: DataTypes.STRING,
-      allowNull: false,
+      // allowNull: false,
     },
     notes: {
       type: DataTypes.TEXT,

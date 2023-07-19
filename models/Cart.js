@@ -12,12 +12,14 @@ module.exports = (sequelize, DataTypes) => {
     size: {
       type: DataTypes.FLOAT,
     },
-    // subTotal: {
-    //   type: DataTypes.FLOAT,
-    // },
-    // total: {
-    //   type: DataTypes.FLOAT,
-    // },
+    price: {
+      type: DataTypes.FLOAT,
+      default: 0,
+    },
+    subTotal: {
+      type: DataTypes.FLOAT,
+      default: 0,
+    },
   });
   return Cart;
 };

@@ -20,6 +20,9 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.FLOAT,
       default: 0,
     },
+    userId: {
+      type: DataTypes.STRING,
+    },
   });
   return Cart;
 };

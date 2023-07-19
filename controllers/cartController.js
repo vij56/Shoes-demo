@@ -69,41 +69,12 @@ const getCart = async (req, res) => {
 };
 
 const updateCart = async (req, res) => {
-  // const { cartId, quantity } = req.body;
-  const foundCart = await Cart.findOne({ where: { id: cartId } });
-  // const cart = await Cart.update(
-  //   { quantity: foundCart.quantity + quantity },
-  //   { where: { id: cartId } }
-  // );
   const { product } = req.body;
-  const carts = await Cart.findAll();
-
-  let tempArr = [];
-
-  if (product.length > 0) {
-    product.forEach((ele, item) => {
-      carts.forEach((i, index) => {
-        if (i.id === ele.id) {
-          tempArr.push(ele);
-        }
-      });
-    });
+  for (const item of product) {
+    const foundCart = await Cart.findOne({ where: { id: item.id } });
+    await foundCart.update({ quantity: item.quantity, subTotal: item.subTotal });
   }
-  const cart = await Cart.create(tempArr);
-
-  console.log(cart);
-
-  // if (JSON.stringify(items) === JSON.stringify(id)) {
-  //   const result = await Cart.update(
-  //     product.map((item) => item.quantity),
-  //     { where: { id: product.map((item) => item.id) } }
-  //   );
-  //   res.status(200).json(result);
-  // }
-  // let filteredProduct = carts.filter((item) => item.id === items.id);
-  // const tempArr = JSON.parse(product);
-  // console.log("sfsfsfsf", tempArr);
-  // res.status(200).json({ items, id });
+  res.status(200).json({ product });
 };
 
 const deleteCart = async (req, res) => {

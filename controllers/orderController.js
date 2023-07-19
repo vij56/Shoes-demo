@@ -1,45 +1,56 @@
 const { Sequelize } = require("sequelize");
-const db = require("../models"); // finds index.js file by default, no need to define
+const db = require("../models");
 
-// create main model
 const Order = db.order;
 const Cart = db.cart;
 const Product = db.products;
 
 const createOrder = async (req, res) => {
   const {
-    // firstName,
-    // lastName,
-    // companyName,
-    // streetAddress,
-    // city,
-    // state,
-    // pinCode,
-    // phoneNumber,
-    // emailAddress,
-    // notes,
+    firstName,
+    lastName,
+    companyName,
+    streetAddress,
+    city,
+    state,
+    pinCode,
+    phoneNumber,
+    emailAddress,
+    notes,
     productId,
     cartId,
   } = req.body;
   const order = await Order.create({
-    // firstName,
-    // lastName,
-    // companyName,
-    // streetAddress,
-    // city,
-    // state,
-    // pinCode,
-    // phoneNumber,
-    // emailAddress,
-    // notes,
+    firstName,
+    lastName,
+    companyName,
+    streetAddress,
+    city,
+    state,
+    pinCode,
+    phoneNumber,
+    emailAddress,
+    notes,
     productId,
     cartId,
   });
   res.status(201).json({ order });
 };
 
+const getCartFromOrder = async (req, res) => {
+  const { id } = req.body;
+  const cart = await Cart.findAll({
+    include: [
+      {
+        model: Product,
+        attributes: ["title", "price"],
+      },
+    ],
+  });
+  res.status(200).json({ cart });
+};
+
 const retrieveOrder = async (req, res) => {
-  const { id } = req.params;
   const order = await Order.findOne({
     include: [
       {
@@ -61,4 +72,5 @@ const retrieveOrder = async (req, res) => {
 module.exports = {
   createOrder,
   retrieveOrder,
+  getCartFromOrder,
 };

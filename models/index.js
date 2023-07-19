@@ -27,14 +27,20 @@ db.sequelize = sequelize;
 
 db.products = require("./Product.js")(sequelize, DataTypes);
 db.cart = require("./Cart.js")(sequelize, DataTypes);
+db.cartItem = require("./CartItem.js")(sequelize, DataTypes);
 db.order = require("./Order.js")(sequelize, DataTypes);
+db.admin = require("./Admin.js")(sequelize, DataTypes);
 
 db.products.hasOne(db.cart);
 db.cart.belongsTo(db.products);
 
-db.order.hasOne(db.cart);
-db.products.hasOne(db.order);
-db.order.belongsTo(db.products);
+// db.order.hasOne(db.cart);
+// db.products.hasOne(db.order);
+// db.order.belongsTo(db.products);
+
+db.cart.hasMany(db.products); //
+db.products.belongsToMany(db.cart, { through: db.cartItem }); //
+db.cart.belongsToMany(db.products, { through: db.cartItem }); //
 
 db.sequelize.sync({ force: true }).then(() => console.log("sync is done."));
 

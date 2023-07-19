@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const Cart = sequelize.define("cart", {
+  const CartItem = sequelize.define("cartItem", {
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
@@ -9,9 +9,9 @@ module.exports = (sequelize, DataTypes) => {
     quantity: {
       type: DataTypes.INTEGER,
     },
-    size: {
-      type: DataTypes.FLOAT,
-    },
+    // size: {
+    //   type: DataTypes.FLOAT,
+    // },
     // subTotal: {
     //   type: DataTypes.FLOAT,
     // },
@@ -19,5 +19,5 @@ module.exports = (sequelize, DataTypes) => {
     //   type: DataTypes.FLOAT,
     // },
   });
-  return Cart;
+  return CartItem;
 };

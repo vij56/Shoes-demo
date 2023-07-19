@@ -1,6 +1,5 @@
 const db = require("../models");
 
-// create main model
 const Review = db.reviews;
 
 const addReview = async (req, res) => {

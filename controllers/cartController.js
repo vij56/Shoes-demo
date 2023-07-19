@@ -1,7 +1,6 @@
 const { Sequelize } = require("sequelize");
-const db = require("../models"); // finds index.js file by default, no need to define
+const db = require("../models");
 
-// create main model
 const Cart = db.cart;
 const Product = db.products;
 
@@ -9,6 +8,7 @@ const createCart = async (req, res) => {
   const { productId, size, quantity } = req.body;
   const cart = await Cart.findAll();
   let filteredProduct = cart.filter(item => item.productId === productId);
+
   if (
     cart.length > 0 &&
     filteredProduct[0]?.productId === productId &&
@@ -33,15 +33,15 @@ const createCart = async (req, res) => {
 
 const getAllProductsFromCart = async (req, res) => {
   const cartProducts = await Cart.findAll({
-    attributes: ["size", "quantity"],
+    attributes: ["id", "size", "quantity"],
     include: [
       {
         model: Product,
-        attributes: ["image", "title", "price"],
+        attributes: ["id", "image", "title", "price"],
       },
     ],
   });
-  res.status(201).json({ cartProducts });
+  res.status(201).json(cartProducts);
 };
 
 const getCart = async (req, res) => {
@@ -60,14 +60,17 @@ const getCart = async (req, res) => {
 };
 
 const updateCart = async (req, res) => {
-  const cartId = parseInt(req.params.cartId);
-  let cart;
-  cart = await Cart.findOne({ where: { id: cartId } });
-  if (cart.id === cartId) {
-    cart = await Cart.update(req.body, { where: { id: cart.id } });
-  }
-  cart = await Cart.create(req.body);
-  res.status(200).json({ cart });
+  // const { cartId, quantity } = req.body;
+  // const foundCart = await Cart.findOne({ where: { id: cartId } });
+  // const cart = await Cart.update(
+  //   { quantity: foundCart.quantity + quantity },
+  //   { where: { id: cartId } }
+  // );
+  const { product } = req.body;
+  console.log("==>", product);
+  // const tempArr = JSON.parse(product);
+  // console.log("sfsfsfsf", tempArr);
+  res.status(200).json({ product: product });
 };
 
 const deleteCart = async (req, res) => {

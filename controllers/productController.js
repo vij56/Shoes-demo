@@ -1,7 +1,6 @@
 const { Sequelize } = require("sequelize");
-const db = require("../models"); // finds index.js file by default, no need to define
+const db = require("../models");
 
-// create main model
 const Product = db.products;
 const Review = db.reviews;
 
@@ -60,7 +59,6 @@ const getProducts = async (req, res) => {
 
 const getSingleProduct = async (req, res) => {
   const { id } = req.params;
-  // The findOne method obtains the first entry it finds (that fulfills the optional query options, if provided).
   const product = await Product.findOne({ where: { id: id } });
   res.status(200).json({ product });
 };

@@ -6,12 +6,15 @@ module.exports = (sequelize, DataTypes) => {
     title: {
       type: DataTypes.STRING,
     },
-    price: {
-      type: DataTypes.INTEGER,
-      defaultValue: 99.99,
+    salePrice: {
+      type: DataTypes.FLOAT,
     },
     description: {
       type: DataTypes.STRING,
+    },
+    productPrice: {
+      type: DataTypes.FLOAT,
+      defaultValue: 1199.99,
     },
   });
   return Product;

@@ -42,6 +42,6 @@ db.cart.hasMany(db.products); //
 db.products.belongsToMany(db.cart, { through: db.cartItem }); //
 db.cart.belongsToMany(db.products, { through: db.cartItem }); //
 
-db.sequelize.sync({ force: false }).then(() => console.log("sync is done."));
+db.sequelize.sync({ force: true }).then(() => console.log("sync is done."));
 
 module.exports = db;

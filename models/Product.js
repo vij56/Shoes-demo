@@ -16,6 +16,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.FLOAT,
       defaultValue: 1199.99,
     },
+    popularity: {
+      type: DataTypes.INTEGER,
+      defaultValue: 1,
+    },
   });
   return Product;
 };

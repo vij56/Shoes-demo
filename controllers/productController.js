@@ -39,6 +39,15 @@ const getAllProducts = async (req, res) => {
   res.status(200).json({ products });
 };
 
+const getRelatedProducts = async (req, res) => {
+  const products = await Product.findAll({});
+  const productCount = 4; // number of elements we want to get
+  const shuffledProducts = products.sort(() => 0.5 - Math.random());
+  const relatedProducts = shuffledProducts.slice(0, productCount);
+  // const relatedProducts = products[Math.floor(Math.random() * products.length)];
+  res.status(200).json({ relatedProducts });
+};
+
 const getProducts = async (req, res) => {
   const { limit } = req.body;
   let { offset } = req.body; // page number
@@ -59,7 +68,13 @@ const getProducts = async (req, res) => {
 
 const getSingleProduct = async (req, res) => {
   const { id } = req.params;
+  const { popularity } = req.body;
   const product = await Product.findOne({ where: { id: id } });
+  if (product.popularity > 0) {
+    product.popularity = product.popularity + popularity;
+    await product.save();
+    return res.status(200).json({ product });
+  }
   res.status(200).json({ product });
 };
 
@@ -79,6 +94,8 @@ const shortProducts = async (req, res) => {
     query = [["salePrice", "ASC"]];
   } else if (stringifySort.includes("latest")) {
     query = [["createdAt", "DESC"]];
+  } else if (stringifySort.includes("popularity")) {
+    query = [["popularity", "DESC"]];
   }
 
   order = query;
@@ -121,4 +138,5 @@ module.exports = {
   getProducts,
   getSingleProduct,
   shortProducts,
+  getRelatedProducts,
 };

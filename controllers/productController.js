@@ -67,9 +67,7 @@ const getProducts = async (req, res) => {
 };
 
 const getSingleProduct = async (req, res) => {
-  // const { id } = req.params;
   const { id, popularity } = req.body;
-
   const product = await Product.findOne({ where: { id: id } });
   if (product) {
     await product.set({

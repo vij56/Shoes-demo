@@ -67,15 +67,19 @@ const getProducts = async (req, res) => {
 };
 
 const getSingleProduct = async (req, res) => {
-  const { id } = req.params;
-  const { popularity } = req.body;
+  // const { id } = req.params;
+  const { id, popularity } = req.body;
+
   const product = await Product.findOne({ where: { id: id } });
-  if (product.popularity > 0) {
-    product.popularity = product.popularity + popularity;
+  if (product) {
+    await product.set({
+      popularity: product.popularity + popularity,
+    });
     await product.save();
     return res.status(200).json({ product });
+  } else {
+    return res.status(200).json({ product });
   }
-  res.status(200).json({ product });
 };
 
 const shortProducts = async (req, res) => {

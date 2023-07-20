@@ -38,18 +38,14 @@ const createCart = async (req, res) => {
 
 const getAllProductsFromCart = async (req, res) => {
   const { userId } = req.params;
-  const cartProducts = await Cart.findAll(
-    {
-      attributes: ["id", "size", "quantity", "price", "subTotal"],
-      include: [
-        {
-          model: Product,
-          attributes: ["id", "image", "title"],
-        },
-      ],
-    },
-    { where: { userId: userId } }
-  );
+  const cartProducts = await Cart.findAll({
+    where: { userId: userId },
+    include: [
+      {
+        model: Product,
+      },
+    ],
+  });
   const total = cartProducts.reduce((acc, item) => (acc += item.subTotal), 0);
   res.status(201).json({ cartProducts, total });
 };

@@ -5,8 +5,8 @@ const { Sequelize, DataTypes } = require("sequelize");
 
 const sequelize = new Sequelize("shoesdemo", "root", process.env.PASSWORD, {
   host: "localhost",
-  logging: false, // turn of showing logs in terminal everytime app restart/reload
-  dialect: "mysql", // The dialect of the database you are connecting to. One of mysql, postgres, sqlite, db2, mariadb and mssql.
+  logging: false,
+  dialect: "mysql",
   pool: {
     max: 5, // Maximum number of connection in pool (default 5)
     min: 0, // Minimum number of connection in pool (default 0)
@@ -18,7 +18,7 @@ const sequelize = new Sequelize("shoesdemo", "root", process.env.PASSWORD, {
 sequelize
   .authenticate()
   .then(() => console.log("Connection has been established successfully."))
-  .catch((err) => console.error("Unable to connect to the database:", err));
+  .catch(err => console.error("Unable to connect to the database:", err));
 
 const db = {};
 
@@ -27,7 +27,6 @@ db.sequelize = sequelize;
 
 db.products = require("./Product.js")(sequelize, DataTypes);
 db.cart = require("./Cart.js")(sequelize, DataTypes);
-db.cartItem = require("./CartItem.js")(sequelize, DataTypes);
 db.order = require("./Order.js")(sequelize, DataTypes);
 db.admin = require("./Admin.js")(sequelize, DataTypes);
 

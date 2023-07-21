@@ -1,18 +1,24 @@
-const { Sequelize } = require("sequelize");
 const db = require("../models");
 
 const Cart = db.cart;
 const Product = db.products;
-const Order = db.order;
 
 const createCart = async (req, res) => {
-  const { productId, size, quantity, price, userId, uniqueId } = req.body;
+  const { productId, size, quantity, price, userId } = req.body;
   const cart = await Cart.findAll();
-  let filteredProduct = cart.filter((item) => item.productId === productId);
+  let filteredProduct = cart.filter(item => item.productId === productId);
 
-  if (cart.length > 0 && filteredProduct[0]?.productId === productId && filteredProduct[0]?.size === size) {
+  if (
+    cart.length > 0 &&
+    filteredProduct[0]?.productId === productId &&
+    filteredProduct[0]?.size === size
+  ) {
     const updatedCart = await Cart.update(
-      { quantity: filteredProduct[0]?.quantity + quantity, subTotal: filteredProduct[0]?.price * (filteredProduct[0]?.quantity + quantity) },
+      {
+        quantity: filteredProduct[0]?.quantity + quantity,
+        subTotal:
+          filteredProduct[0]?.price * (filteredProduct[0]?.quantity + quantity),
+      },
       {
         where: { id: filteredProduct[0].id },
       }
@@ -25,7 +31,6 @@ const createCart = async (req, res) => {
       quantity,
       price,
       userId,
-      uniqueId,
     });
     if (quantity > 1) {
       updatedCart.subTotal = updatedCart.quantity * updatedCart.price;
@@ -71,7 +76,10 @@ const updateCart = async (req, res) => {
   const { product } = req.body;
   for (const item of product) {
     const foundCart = await Cart.findOne({ where: { id: item.id } });
-    await foundCart.update({ quantity: item.quantity, subTotal: item.subTotal });
+    await foundCart.update({
+      quantity: item.quantity,
+      subTotal: item.subTotal,
+    });
   }
   res.status(200).json({ product });
 };

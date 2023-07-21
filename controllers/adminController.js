@@ -2,8 +2,6 @@ const { Sequelize } = require("sequelize");
 const db = require("../models");
 
 const Product = db.products;
-const Admin = db.admin;
-const Cart = db.cart;
 
 const addProduct = async (req, res) => {
   if (req.body.length > 1) {

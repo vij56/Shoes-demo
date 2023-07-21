@@ -1,11 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
   const Cart = sequelize.define("cart", {
-    // id: {
-    //   type: DataTypes.INTEGER,
-    //   autoIncrement: true,
-    //   primaryKey: true,
-    //   allowNull: false,
-    // },
     quantity: {
       type: DataTypes.INTEGER,
     },
@@ -22,9 +16,6 @@ module.exports = (sequelize, DataTypes) => {
     },
     userId: {
       type: DataTypes.STRING,
-    },
-    uniqueId: {
-      type: DataTypes.BIGINT,
     },
   });
   return Cart;

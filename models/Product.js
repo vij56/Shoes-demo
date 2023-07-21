@@ -2,6 +2,15 @@ module.exports = (sequelize, DataTypes) => {
   const Product = sequelize.define("product", {
     image: {
       type: DataTypes.STRING,
+      get() {
+        // When retrieving the value, parse the string to an array
+        const data = this.getDataValue("image");
+        return data ? JSON.parse(data) : [];
+      },
+      set(value) {
+        // When setting the value, convert the array to a string
+        this.setDataValue("image", JSON.stringify(value));
+      },
     },
     title: {
       type: DataTypes.STRING,

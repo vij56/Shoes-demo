@@ -53,14 +53,14 @@ const getProducts = async (req, res) => {
   let { offset } = req.body; // page number
 
   // The findAndCountAll method is a convenience method that combines findAll and count. This is useful when dealing with queries related to pagination where you want to retrieve data with a limit and offset but also need to know the total number of records that match the query.
-  Product.findAndCountAll().then((data) => {
+  Product.findAndCountAll().then(data => {
     const pages = Math.ceil(data.count / limit);
     offset = limit * (offset - 1);
 
     Product.findAll({
       limit: limit,
       offset: offset,
-    }).then((products) => {
+    }).then(products => {
       res.status(200).json({ products, count: data.count, pages });
     });
   });
@@ -102,7 +102,7 @@ const shortProducts = async (req, res) => {
 
   order = query;
 
-  Product.findAndCountAll().then((data) => {
+  Product.findAndCountAll().then(data => {
     const pages = Math.ceil(data.count / limit);
     offset = limit * (offset - 1);
 
@@ -110,7 +110,7 @@ const shortProducts = async (req, res) => {
       limit: limit,
       offset: offset,
       order: order,
-    }).then((products) => {
+    }).then(products => {
       res.status(200).json({
         products,
         count: data.count,

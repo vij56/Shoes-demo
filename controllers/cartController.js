@@ -3,9 +3,10 @@ const db = require("../models");
 
 const Cart = db.cart;
 const Product = db.products;
+const Order = db.order;
 
 const createCart = async (req, res) => {
-  const { productId, size, quantity, price, userId } = req.body;
+  const { productId, size, quantity, price, userId, uniqueId } = req.body;
   const cart = await Cart.findAll();
   let filteredProduct = cart.filter((item) => item.productId === productId);
 
@@ -16,7 +17,7 @@ const createCart = async (req, res) => {
         where: { id: filteredProduct[0].id },
       }
     );
-    return res.status(201).json({ updatedCart });
+    return res.status(200).json({ updatedCart });
   } else {
     const updatedCart = await Cart.create({
       productId,
@@ -24,6 +25,7 @@ const createCart = async (req, res) => {
       quantity,
       price,
       userId,
+      uniqueId,
     });
     if (quantity > 1) {
       updatedCart.subTotal = updatedCart.quantity * updatedCart.price;
@@ -74,7 +76,7 @@ const updateCart = async (req, res) => {
   res.status(200).json({ product });
 };
 
-const deleteCart = async (req, res) => {
+const clearCart = async (req, res) => {
   const { id } = req.params;
   await Cart.destroy({
     where: { id: id },
@@ -86,6 +88,6 @@ module.exports = {
   createCart,
   getCart,
   updateCart,
-  deleteCart,
   getAllProductsFromCart,
+  clearCart,
 };

@@ -22,11 +22,9 @@ module.exports = (sequelize, DataTypes) => {
     },
     skuId: {
       type: DataTypes.STRING,
-      defaultValue: "N-5",
     },
     category: {
       type: DataTypes.STRING,
-      defaultValue: "Men Footwear",
     },
   });
   return Product;

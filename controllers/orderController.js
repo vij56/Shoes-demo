@@ -1,4 +1,3 @@
-const { Sequelize } = require("sequelize");
 const db = require("../models");
 
 const Order = db.order;
@@ -20,8 +19,13 @@ const createOrder = async (req, res) => {
     product,
     total,
     toc,
+    userId,
+    cartId,
   } = req.body;
   if (toc) {
+    for (id of cartId) {
+      await Cart.destroy({ where: { id: id } });
+    }
     const order = await Order.create({
       firstName,
       lastName,
@@ -35,13 +39,14 @@ const createOrder = async (req, res) => {
       notes,
       product,
       total,
+      toc,
+      userId,
     });
     return res.status(201).json(order);
   }
 };
 
 const getCartFromOrder = async (req, res) => {
-  const { id } = req.body;
   const cart = await Cart.findAll({
     include: [
       {

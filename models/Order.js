@@ -49,6 +49,9 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
+    userId: {
+      type: DataTypes.STRING,
+    },
   });
   return Order;
 };

@@ -74,6 +74,7 @@ const getSingleProduct = async (req, res) => {
       popularity: product.popularity + popularity,
     });
     await product.save();
+    console.log("=>product", product);
     return res.status(200).json({ product });
   } else {
     return res.status(200).json({ product });

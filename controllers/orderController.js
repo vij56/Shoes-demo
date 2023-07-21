@@ -6,20 +6,7 @@ const Cart = db.cart;
 const Product = db.products;
 
 const createOrder = async (req, res) => {
-  const {
-    firstName,
-    lastName,
-    companyName,
-    streetAddress,
-    city,
-    state,
-    pinCode,
-    phoneNumber,
-    emailAddress,
-    notes,
-    productId,
-    cartId,
-  } = req.body;
+  const { firstName, lastName, companyName, streetAddress, city, state, pinCode, phoneNumber, emailAddress, notes, product, total } = req.body;
   const order = await Order.create({
     firstName,
     lastName,
@@ -31,10 +18,10 @@ const createOrder = async (req, res) => {
     phoneNumber,
     emailAddress,
     notes,
-    productId,
-    cartId,
+    product,
+    total,
   });
-  res.status(201).json({ order });
+  res.status(201).json(order);
 };
 
 const getCartFromOrder = async (req, res) => {
@@ -51,19 +38,8 @@ const getCartFromOrder = async (req, res) => {
 };
 
 const retrieveOrder = async (req, res) => {
+  const { id } = req.params;
   const order = await Order.findOne({
-    include: [
-      {
-        model: Product,
-        attributes: ["title", "price"],
-        include: [
-          {
-            model: Cart,
-            attributes: ["size", "quantity"],
-          },
-        ],
-      },
-    ],
     where: { id: id },
   });
   res.status(200).json({ order });

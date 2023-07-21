@@ -9,6 +9,10 @@ module.exports = (sequelize, DataTypes) => {
     companyName: {
       type: DataTypes.STRING,
     },
+    country: {
+      type: DataTypes.STRING,
+      defaultValue: "India",
+    },
     streetAddress: {
       type: DataTypes.TEXT,
     },
@@ -33,6 +37,13 @@ module.exports = (sequelize, DataTypes) => {
     paymentMethod: {
       type: DataTypes.STRING,
       defaultValue: "Cash On Delivery",
+    },
+    product: {
+      type: DataTypes.TEXT,
+    },
+    total: {
+      type: DataTypes.FLOAT,
+      defaultValue: 0,
     },
   });
   return Order;

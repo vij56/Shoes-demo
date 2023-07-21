@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
     },
     companyName: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
     },
     country: {
       type: DataTypes.STRING,
@@ -29,21 +29,25 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BIGINT,
     },
     emailAddress: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
     },
     notes: {
       type: DataTypes.TEXT,
     },
     paymentMethod: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       defaultValue: "Cash On Delivery",
     },
     product: {
       type: DataTypes.TEXT,
     },
     total: {
-      type: DataTypes.FLOAT,
+      type: DataTypes.INTEGER,
       defaultValue: 0,
+    },
+    toc: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
     },
   });
   return Order;

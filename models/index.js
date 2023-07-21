@@ -18,7 +18,7 @@ const sequelize = new Sequelize("shoesdemo", "root", process.env.PASSWORD, {
 sequelize
   .authenticate()
   .then(() => console.log("Connection has been established successfully."))
-  .catch((err) => console.error("Unable to connect to the database:", err));
+  .catch(err => console.error("Unable to connect to the database:", err));
 
 const db = {};
 
@@ -38,9 +38,9 @@ db.cart.belongsTo(db.products);
 // db.products.hasOne(db.order);
 // db.order.belongsTo(db.products);
 
-db.cart.hasMany(db.products); //
-db.products.belongsToMany(db.cart, { through: db.cartItem }); //
-db.cart.belongsToMany(db.products, { through: db.cartItem }); //
+// db.cart.hasMany(db.products); //
+// db.products.belongsToMany(db.cart, { through: db.cartItem }); //
+// db.cart.belongsToMany(db.products, { through: db.cartItem }); //
 
 db.sequelize.sync({ force: true }).then(() => console.log("sync is done."));
 

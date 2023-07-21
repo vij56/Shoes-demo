@@ -6,8 +6,7 @@ const Cart = db.cart;
 const Product = db.products;
 
 const createOrder = async (req, res) => {
-  const { firstName, lastName, companyName, streetAddress, city, state, pinCode, phoneNumber, emailAddress, notes, product, total } = req.body;
-  const order = await Order.create({
+  const {
     firstName,
     lastName,
     companyName,
@@ -20,8 +19,25 @@ const createOrder = async (req, res) => {
     notes,
     product,
     total,
-  });
-  res.status(201).json(order);
+    toc,
+  } = req.body;
+  if (toc) {
+    const order = await Order.create({
+      firstName,
+      lastName,
+      companyName,
+      streetAddress,
+      city,
+      state,
+      pinCode,
+      phoneNumber,
+      emailAddress,
+      notes,
+      product,
+      total,
+    });
+    return res.status(201).json(order);
+  }
 };
 
 const getCartFromOrder = async (req, res) => {

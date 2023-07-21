@@ -7,14 +7,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
     },
     salePrice: {
-      type: DataTypes.FLOAT,
+      type: DataTypes.INTEGER,
     },
     description: {
       type: DataTypes.STRING,
     },
     productPrice: {
-      type: DataTypes.FLOAT,
-      defaultValue: 1199.99,
+      type: DataTypes.INTEGER,
+      defaultValue: 1200,
     },
     popularity: {
       type: DataTypes.INTEGER,
@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     category: {
       type: DataTypes.STRING,
-      defaultValue: "N-5",
+      defaultValue: "Men Footwear",
     },
   });
   return Product;

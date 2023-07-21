@@ -1,7 +1,7 @@
 module.exports = (sequelize, DataTypes) => {
   const Product = sequelize.define("product", {
     image: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       get() {
         // When retrieving the value, parse the string to an array
         const data = this.getDataValue("image");

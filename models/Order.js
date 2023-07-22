@@ -40,6 +40,13 @@ module.exports = (sequelize, DataTypes) => {
     },
     product: {
       type: DataTypes.TEXT,
+      get() {
+        const data = this.getDataValue("product");
+        return data ? JSON.parse(data) : [];
+      },
+      set(value) {
+        this.setDataValue("product", JSON.stringify(value));
+      },
     },
     total: {
       type: DataTypes.INTEGER,

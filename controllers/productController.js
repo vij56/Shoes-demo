@@ -44,19 +44,16 @@ const getRelatedProducts = async (req, res) => {
   const productCount = 4; // number of elements we want to get
   const shuffledProducts = products.sort(() => 0.5 - Math.random());
   const relatedProducts = shuffledProducts.slice(0, productCount);
-  // const relatedProducts = products[Math.floor(Math.random() * products.length)];
   res.status(200).json({ relatedProducts });
 };
 
 const getProducts = async (req, res) => {
   const { limit } = req.body;
   let { offset } = req.body; // page number
-
   // The findAndCountAll method is a convenience method that combines findAll and count. This is useful when dealing with queries related to pagination where you want to retrieve data with a limit and offset but also need to know the total number of records that match the query.
   Product.findAndCountAll().then((data) => {
     const pages = Math.ceil(data.count / limit);
     offset = limit * (offset - 1);
-
     Product.findAll({
       limit: limit,
       offset: offset,
@@ -85,10 +82,7 @@ const shortProducts = async (req, res) => {
   const stringifySort = JSON.stringify(sort);
   const { limit } = req.body;
   let { offset } = req.body; // page number
-
   let order;
-
-  // sorting
   let query;
   if (stringifySort.includes("high to low")) {
     query = [["salePrice", "DESC"]];
@@ -99,13 +93,10 @@ const shortProducts = async (req, res) => {
   } else if (stringifySort.includes("popularity")) {
     query = [["popularity", "DESC"]];
   }
-
   order = query;
-
   Product.findAndCountAll().then((data) => {
     const pages = Math.ceil(data.count / limit);
     offset = limit * (offset - 1);
-
     Product.findAll({
       limit: limit,
       offset: offset,

@@ -1,4 +1,4 @@
-const { Sequelize } = require("sequelize");
+const csv = require("csvtojson");
 const db = require("../models");
 
 const Product = db.products;
@@ -36,10 +36,36 @@ const deleteProduct = async (req, res) => {
   res.status(200).json({ product });
 };
 
+const uploadFile = async (req, res) => {
+  console.log(req.file);
+  if (req.file === undefined) {
+    return res.status(400).send("Please upload an excel file!");
+  }
+  let product = [];
+  csv()
+    .fromFile(req.file.path)
+    .then(async (result) => {
+      for (i = 0; i < result.length; i++) {
+        product.push({
+          image: result[i].image,
+          title: result[i].title,
+          salePrice: result[i].salePrice,
+          description: result[i].description,
+          productPrice: result[i].productPrice,
+          skuId: result[i].skuId,
+          category: result[i].category,
+        });
+      }
+      const products = await Product.bulkCreate(product);
+      res.status(201).json({ products });
+    });
+};
+
 module.exports = {
   addProduct,
   getAllProducts,
   getSingleProduct,
   updateProduct,
   deleteProduct,
+  uploadFile,
 };

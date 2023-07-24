@@ -16,7 +16,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/api", productRouter, cartRouter, orderRouter, adminRouter);
+app.use("/api", productRouter, cartRouter, orderRouter);
+app.use("/api/admin", adminRouter);
 
 const port = process.env.PORT || 8080;
 

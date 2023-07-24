@@ -6,7 +6,7 @@ const Product = db.products;
 const createCart = async (req, res) => {
   const { productId, size, quantity, price, userId } = req.body;
   const cart = await Cart.findAll();
-  let filteredProduct = cart.filter(item => item.productId === productId);
+  let filteredProduct = cart.filter((item) => item.productId === productId);
 
   if (
     cart.length > 0 &&

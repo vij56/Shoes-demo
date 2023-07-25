@@ -1,6 +1,7 @@
 const csv = require("csvtojson");
 const data_exporter = require("json2csv").Parser;
 const db = require("../models");
+const multiParty = require("multiparty");
 
 const fastcsv = require("fast-csv");
 const fs = require("fs");
@@ -8,17 +9,22 @@ const ws = fs.createWriteStream("itbuddies.csv");
 
 const Product = db.products;
 
+const dir = "./public/images";
+
 const addProduct = async (req, res) => {
-  console.log(req.image);
-  // if (req.body.length > 1) {
-  //   const products = await Product.bulkCreate(req.body);
-  //   res.status(201).json({ products });
-  // } else {
-  //   const product = await Product.create(req.body);
-  //   product.image = req.body.image;
-  //   await product.save();
-  //   res.status(201).json({ product });
-  // }
+  const form = new multiParty.Form({ uploadDir: dir });
+  form.parse(req, async function (err, fields, files) {
+    if (err) return res.status(500).json({ err: err.message });
+    console.log(files);
+    console.log(fields);
+    const imagePath = files.image[0].path;
+    const imageFileName = imagePath.slice(imagePath.lastIndexOf("\\") + 1);
+    const imageUrl = process.env.IMAGE_BASE_URL + imageFileName;
+    const product = await Product.create(req.body);
+    product.image = imageUrl;
+    await product.save();
+    res.status(201).json({ product });
+  });
 };
 
 const getAllProducts = async (req, res) => {

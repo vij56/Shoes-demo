@@ -1,17 +1,24 @@
 const csv = require("csvtojson");
+const data_exporter = require("json2csv").Parser;
 const db = require("../models");
-const excel = require("exceljs");
+
+const fastcsv = require("fast-csv");
+const fs = require("fs");
+const ws = fs.createWriteStream("itbuddies.csv");
 
 const Product = db.products;
 
 const addProduct = async (req, res) => {
-  if (req.body.length > 1) {
-    const products = await Product.bulkCreate(req.body);
-    res.status(201).json({ products });
-  } else {
-    const product = await Product.create(req.body);
-    res.status(201).json({ product });
-  }
+  console.log(req.image);
+  // if (req.body.length > 1) {
+  //   const products = await Product.bulkCreate(req.body);
+  //   res.status(201).json({ products });
+  // } else {
+  //   const product = await Product.create(req.body);
+  //   product.image = req.body.image;
+  //   await product.save();
+  //   res.status(201).json({ product });
+  // }
 };
 
 const getAllProducts = async (req, res) => {
@@ -47,7 +54,7 @@ const uploadFile = async (req, res) => {
     .then(async (result) => {
       for (i = 0; i < result.length; i++) {
         product.push({
-          image: result[i].image,
+          image: JSON.parse(result[i].image),
           title: result[i].title,
           salePrice: result[i].salePrice,
           description: result[i].description,
@@ -83,64 +90,39 @@ const updateFile = async (req, res) => {
       }
       for (const item of product) {
         const foundProduct = await Product.findOne({ where: { id: item.id } });
-        await foundProduct.update({
-          image: item.image,
-          title: item.title,
-          salePrice: item.salePrice,
-          description: item.description,
-          productPrice: item.productPrice,
-          skuId: item.skuId,
-          category: item.category,
-        });
+        if (foundProduct) {
+          await foundProduct.update({
+            image: JSON.parse(item.image),
+            title: item.title,
+            salePrice: item.salePrice,
+            description: item.description,
+            productPrice: item.productPrice,
+            skuId: item.skuId,
+            category: item.category,
+          });
+        } else {
+          return res.status(400).json({ msg: "No product found to update" });
+        }
       }
-      res.status(201).json({ product });
+      res.status(201).json({ msg: "products are updated successfully" });
     });
 };
 
 const downloadFile = async (req, res) => {
-  Product.findAll({}).then(async (prod) => {
-    const products = [];
-    for (let i = 0; i < prod.length; i++) {
-      const datavalues = prod[i].dataValues;
-      console.log(datavalues);
-      const product = {
-        id: datavalues.id,
-        image: datavalues.image,
-        title: datavalues.title,
-        salePrice: datavalues.salePrice,
-        description: datavalues.description,
-        productPrice: datavalues.productPrice,
-        skuId: datavalues.skuId,
-        category: datavalues.category,
-      };
-      products.push(product);
-    }
-    const jsonProducts = JSON.parse(JSON.stringify(products));
-    let workbook = new excel.Workbook(); //creating workbook
-    let worksheet = workbook.addWorksheet("Products"); //creating worksheet
-    worksheet.columns = [
-      { header: "Id", key: "id", width: 10 },
-      { header: "Image", key: "image", width: 30 },
-      { header: "Title", key: "title", width: 30 },
-      { header: "SalePrice", key: "salePrice", width: 30 },
-      { header: "Description", key: "description", width: 30 },
-      { header: "ProductPrice", key: "productPrice", width: 30 },
-      { header: "SkuId", key: "skuId", width: 30 },
-      { header: "Category", key: "category", width: 30, outlineLevel: 1 },
-    ];
-    // Add Array Rows
-    worksheet.addRows(jsonProducts);
-    res.setHeader(
-      "Content-Type",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    );
-    res.setHeader(
-      "Content-Disposition",
-      "attachment; filename=" + "products.xlsx"
-    );
-    await workbook.xlsx.write(res);
-    res.status(200).end();
-  });
+  const prods = await Product.findAll({});
+  const mysql_data = JSON.parse(JSON.stringify(prods));
+  fastcsv
+    .write(mysql_data, { headers: true })
+    .on("finish", function () {
+      console.log("Write to itbuddies.csv successfully!");
+    })
+    .pipe(ws);
+  // const file_header = ["Id", "Image", "Title", "Sale Price", "Description", "Product Price", "Sku ID", "Category"];
+  // const json_data = new data_exporter({ file_header });
+  // const csv_data = json_data.parse(mysql_data);
+  // res.setHeader("Content-Type", "text/csv");
+  // res.setHeader("Content-Disposition", "attachment; filename=sample_data.csv");
+  // res.status(200).json({ csv_data });
 };
 
 module.exports = {

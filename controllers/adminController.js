@@ -15,13 +15,17 @@ const addProduct = async (req, res) => {
   const form = new multiParty.Form({ uploadDir: dir });
   form.parse(req, async function (err, fields, files) {
     if (err) return res.status(500).json({ err: err.message });
-    console.log(files);
-    console.log(fields);
-    const imagePath = files.image[0].path;
-    const imageFileName = imagePath.slice(imagePath.lastIndexOf("\\") + 1);
-    const imageUrl = process.env.IMAGE_BASE_URL + imageFileName;
-    const product = await Product.create(req.body);
-    product.image = imageUrl;
+    let tempArray = [];
+    for (const f of files.file) {
+      tempArray.push(process.env.IMAGE_BASE_URL + f.path.slice(7));
+    }
+    const product = await Product.create({
+      title: fields.title[0],
+      description: fields.description[0],
+      productPrice: fields.productPrice[0],
+      salePrice: fields.salePrice[0],
+    });
+    product.image = tempArray;
     await product.save();
     res.status(201).json({ product });
   });
@@ -40,8 +44,37 @@ const getSingleProduct = async (req, res) => {
 
 const updateProduct = async (req, res) => {
   const { id } = req.params;
-  const product = await Product.update(req.body, { where: { id: id } });
-  res.status(200).json({ product });
+  const form = new multiParty.Form({ uploadDir: dir });
+  form.parse(req, async function (err, fields, files) {
+    if (files.file) {
+      let tempArray = [];
+      for (const f of files.file) {
+        tempArray.push(process.env.IMAGE_BASE_URL + f.path.slice(7));
+      }
+      const product = await Product.update(
+        {
+          image: tempArray,
+          title: fields.title[0],
+          description: fields.description[0],
+          productPrice: fields.productPrice[0],
+          salePrice: fields.salePrice[0],
+        },
+        { where: { id: id } }
+      );
+      res.status(201).json({ product });
+    } else {
+      const product = await Product.update(
+        {
+          title: fields.title[0],
+          description: fields.description[0],
+          productPrice: fields.productPrice[0],
+          salePrice: fields.salePrice[0],
+        },
+        { where: { id: id } }
+      );
+      res.status(201).json({ product });
+    }
+  });
 };
 
 const deleteProduct = async (req, res) => {
@@ -62,7 +95,7 @@ const uploadFile = async (req, res) => {
         product.push({
           image: JSON.parse(result[i].image),
           title: result[i].title,
-          salePrice: result[i].salePrice,
+          salePrice: parseInt(result[i].salePrice),
           description: result[i].description,
           productPrice: result[i].productPrice,
           skuId: result[i].skuId,

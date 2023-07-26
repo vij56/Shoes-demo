@@ -1,10 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
   const Product = sequelize.define("product", {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
     image: {
       type: DataTypes.TEXT,
       get() {
@@ -15,6 +10,16 @@ module.exports = (sequelize, DataTypes) => {
       set(value) {
         // When setting the value, convert the array to a string
         this.setDataValue("image", JSON.stringify(value));
+      },
+    },
+    size: {
+      type: DataTypes.TEXT,
+      get() {
+        const data = this.getDataValue("size");
+        return data ? JSON.parse(data) : [];
+      },
+      set(value) {
+        this.setDataValue("size", JSON.stringify(value));
       },
     },
     title: {

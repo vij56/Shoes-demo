@@ -25,6 +25,7 @@ const addProduct = async (req, res) => {
       productPrice: fields.productPrice[0],
       salePrice: fields.salePrice[0],
       skuId: fields.sku[0],
+      size: fields.size[0],
     });
     product.image = tempArray;
     await product.save();

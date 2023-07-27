@@ -126,15 +126,18 @@ const getProductReviews = async (req, res) => {
 };
 
 const searchProductByKeyword = async (req, res) => {
-  const { searchBySkuId } = req.body;
-  const data = await Product.findAndCountAll({
+  const { searchByTitle } = req.body;
+  if (!searchByTitle) {
+    return res.status(200).json({ data: [] });
+  }
+  const data = await Product.findAll({
     where: {
-      skuId: {
-        [Op.like]: "%" + searchBySkuId + "%",
+      title: {
+        [Op.like]: "%" + searchByTitle + "%",
       },
     },
   });
-  res.status(200).json({ data });
+  res.status(200).json(data);
 };
 
 module.exports = {

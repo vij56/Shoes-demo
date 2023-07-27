@@ -13,14 +13,14 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
     size: {
-      type: DataTypes.TEXT,
+      type: DataTypes.STRING,
       get() {
         const data = this.getDataValue("size");
         return data ? JSON.parse(data) : [];
       },
-      set(value) {
-        this.setDataValue("size", JSON.stringify(value));
-      },
+      // set(value) {
+      //   this.setDataValue("size", JSON.stringify(value));
+      // },
     },
     title: {
       type: DataTypes.STRING,

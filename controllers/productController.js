@@ -2,29 +2,6 @@ const db = require("../models");
 const { Op } = require("sequelize");
 
 const Product = db.products;
-const Review = db.reviews;
-
-const addProduct = async (req, res) => {
-  if (req.body.length > 1) {
-    const products = await Product.bulkCreate(req.body);
-    res.status(201).json({ products });
-  } else {
-    const product = await Product.create(req.body);
-    res.status(201).json({ product });
-  }
-};
-
-const findOrCreateProduct = async (req, res) => {
-  // The method findOrCreate will create an entry in the table unless it can find one fulfilling the query options. In both cases, it will return an instance (either the found instance or the created instance) and a boolean indicating whether that instance was created or already existed.
-  const [product, created] = await Product.findOrCreate({
-    // The where option is considered for finding the entry, and the defaults option is used to define what must be created in case nothing was found. If the defaults do not contain values for every column, Sequelize will take the values given to where (if present).
-    where: { price: req.body.price },
-    defaults: {
-      title: "default title",
-    },
-  });
-  res.status(201).json({ product, created });
-};
 
 const getAllProducts = async (req, res) => {
   const products = await Product.findAll({
@@ -41,9 +18,8 @@ const getAllProducts = async (req, res) => {
 
 const getRelatedProducts = async (req, res) => {
   const products = await Product.findAll({});
-  const productCount = 4; // number of elements we want to get
   const shuffledProducts = products.sort(() => 0.5 - Math.random());
-  const relatedProducts = shuffledProducts.slice(0, productCount);
+  const relatedProducts = shuffledProducts.slice(0, 4); // number of elements we want to get (4)
   res.status(200).json({ relatedProducts });
 };
 
@@ -78,19 +54,17 @@ const getSingleProduct = async (req, res) => {
 };
 
 const shortProducts = async (req, res) => {
-  const { sort } = req.body;
-  const stringifySort = JSON.stringify(sort);
-  const { limit } = req.body;
+  const { sort, limit } = req.body;
   let { offset } = req.body; // page number
   let order;
   let query;
-  if (stringifySort.includes("high to low")) {
+  if (sort.includes("high to low")) {
     query = [["salePrice", "DESC"]];
-  } else if (stringifySort.includes("low to high")) {
+  } else if (sort.includes("low to high")) {
     query = [["salePrice", "ASC"]];
-  } else if (stringifySort.includes("latest")) {
+  } else if (sort.includes("latest")) {
     query = [["createdAt", "DESC"]];
-  } else if (stringifySort.includes("popularity")) {
+  } else if (sort.includes("popularity")) {
     query = [["popularity", "DESC"]];
   }
   order = query;
@@ -111,20 +85,6 @@ const shortProducts = async (req, res) => {
   });
 };
 
-const getProductReviews = async (req, res) => {
-  const { productId } = req.body;
-  const data = await Product.findAll({
-    include: [
-      {
-        model: Review,
-        as: "review",
-      },
-    ],
-    where: { id: productId },
-  });
-  res.status(200).json({ data });
-};
-
 const searchProductByKeyword = async (req, res) => {
   const { searchByTitle } = req.body;
   if (!searchByTitle) {
@@ -141,7 +101,6 @@ const searchProductByKeyword = async (req, res) => {
 };
 
 module.exports = {
-  addProduct,
   getAllProducts,
   getProducts,
   getSingleProduct,

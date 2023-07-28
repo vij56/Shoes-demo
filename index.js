@@ -1,11 +1,10 @@
 const express = require("express");
 const cors = require("cors");
-const dotenv = require("dotenv");
+require("dotenv").config();
 
 require("./models/index.js");
 
 const app = express();
-dotenv.config();
 
 const productRouter = require("./routes/productRoutes.js");
 const cartRouter = require("./routes/cartRoutes.js");

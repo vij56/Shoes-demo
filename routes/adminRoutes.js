@@ -1,7 +1,11 @@
 const router = require("express").Router();
 const adminController = require("../controllers/adminController.js");
 const upload = require("../middleware/upload.js");
+const authentication = require("../middleware/jwtAth.js");
 
+router.post("/signup", adminController.signUp);
+router.post("/login", adminController.login);
+router.post("/dummy", authentication, adminController.dummy);
 router.post("/product", adminController.addProduct);
 router.get("/product", adminController.getAllProducts);
 router.get("/product/:id", adminController.getSingleProduct);

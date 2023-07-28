@@ -2,14 +2,54 @@ const csv = require("csvtojson");
 const data_exporter = require("json2csv").Parser;
 const db = require("../models");
 const multiParty = require("multiparty");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const fastcsv = require("fast-csv");
 const fs = require("fs");
 const ws = fs.createWriteStream("itbuddies.csv");
 
 const Product = db.products;
+const Admin = db.admin;
+const Review = db.reviews;
 
 const dir = "./public/images";
+
+const signUp = async (req, res) => {
+  const { email, password } = req.body;
+  const isAdminExists = await Admin.findOne({
+    where: { email: email },
+  });
+  if (isAdminExists) {
+    return res.status(400).json({ msg: `${email} is already registered` });
+  }
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
+  const admin = await Admin.create({
+    email: email,
+    password: hashedPassword,
+  });
+  res.status(201).json(admin);
+};
+
+const login = async (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(400).json({ msg: "please provide all values" });
+  }
+  const isAdminExists = await Admin.findOne({
+    where: { email: email },
+  });
+  if (!isAdminExists) {
+    return res.status(400).json({ msg: `${email} is not registered` });
+  }
+  const MatchPassword = await bcrypt.compare(password, isAdminExists.password);
+  if (!MatchPassword) {
+    return res.status(400).json({ msg: "incorrect password" });
+  }
+  const token = jwt.sign({ id: isAdminExists.id, email: isAdminExists.email }, process.env.JWT_SECRET, { expiresIn: 60 });
+  res.status(201).json({ msg: "admin logged in", token });
+};
 
 const addProduct = async (req, res) => {
   const form = new multiParty.Form({ uploadDir: dir });
@@ -31,6 +71,32 @@ const addProduct = async (req, res) => {
     await product.save();
     res.status(201).json({ product });
   });
+};
+
+const findOrCreateProduct = async (req, res) => {
+  // The method findOrCreate will create an entry in the table unless it can find one fulfilling the query options. In both cases, it will return an instance (either the found instance or the created instance) and a boolean indicating whether that instance was created or already existed.
+  const [product, created] = await Product.findOrCreate({
+    // The where option is considered for finding the entry, and the defaults option is used to define what must be created in case nothing was found. If the defaults do not contain values for every column, Sequelize will take the values given to where (if present).
+    where: { price: req.body.price },
+    defaults: {
+      title: "default title",
+    },
+  });
+  res.status(201).json({ product, created });
+};
+
+const getProductReviews = async (req, res) => {
+  const { productId } = req.body;
+  const data = await Product.findAll({
+    include: [
+      {
+        model: Review,
+        as: "review",
+      },
+    ],
+    where: { id: productId },
+  });
+  res.status(200).json({ data });
 };
 
 const getAllProducts = async (req, res) => {
@@ -102,6 +168,7 @@ const uploadFile = async (req, res) => {
           productPrice: result[i].productPrice,
           skuId: result[i].skuId,
           category: result[i].category,
+          size: result[i].size,
         });
       }
       const products = await Product.bulkCreate(product);
@@ -166,7 +233,13 @@ const downloadFile = async (req, res) => {
   // res.status(200).json({ csv_data });
 };
 
+const dummy = (req, res) => {
+  res.status(200).json(req.admin);
+};
+
 module.exports = {
+  signUp,
+  login,
   addProduct,
   getAllProducts,
   getSingleProduct,
@@ -175,4 +248,5 @@ module.exports = {
   uploadFile,
   updateFile,
   downloadFile,
+  dummy,
 };

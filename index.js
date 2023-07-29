@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
+const morgan = require("morgan");
 
 require("./models/index.js");
 
@@ -11,6 +12,7 @@ const cartRouter = require("./routes/cartRoutes.js");
 const orderRouter = require("./routes/orderRoutes.js");
 const adminRouter = require("./routes/adminRoutes.js");
 
+app.use(morgan("tiny"));
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

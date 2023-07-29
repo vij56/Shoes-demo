@@ -138,7 +138,7 @@ const updateProduct = async (req, res) => {
         description: fields.description[0],
         productPrice: fields.productPrice[0],
         salePrice: fields.salePrice[0],
-        // size: fields.size,
+        size: fields.size,
       },
       { where: { id: id } }
     );
@@ -161,16 +161,17 @@ const uploadFile = async (req, res) => {
     .fromFile(req.file.path)
     .then(async (result) => {
       for (i = 0; i < result.length; i++) {
+        const image = result[i].image.split(",");
+        const size = result[i].size.split(",");
         product.push({
-          id: result[i].id,
-          image: JSON.parse(result[i].image),
+          image: image,
           title: result[i].title,
           salePrice: parseInt(result[i].salePrice),
           description: result[i].description,
           productPrice: result[i].productPrice,
           skuId: result[i].skuId,
           category: result[i].category,
-          size: result[i].size,
+          size: size,
         });
       }
       const products = await Product.bulkCreate(product);

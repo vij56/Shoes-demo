@@ -11,7 +11,6 @@ const ws = fs.createWriteStream("itbuddies.csv");
 
 const Product = db.products;
 const Admin = db.admin;
-const Review = db.reviews;
 
 const dir = "./public/images";
 
@@ -55,11 +54,12 @@ const addProduct = async (req, res) => {
   const form = new multiParty.Form({ uploadDir: dir });
   form.parse(req, async function (err, fields, files) {
     if (err) return res.status(500).json({ err: err.message });
-    let tempArray = [];
-    for (const f of files.file) {
-      tempArray.push(process.env.IMAGE_BASE_URL + f.path.slice(7));
+    let imageArray = [];
+    for (const image of files.file) {
+      imageArray.push(process.env.IMAGE_BASE_URL + image.path.slice(7));
     }
     const product = await Product.create({
+      image: imageArray,
       title: fields.title[0],
       description: fields.description[0],
       productPrice: fields.productPrice[0],
@@ -67,8 +67,6 @@ const addProduct = async (req, res) => {
       skuId: fields.sku[0],
       size: fields.size[0],
     });
-    product.image = tempArray;
-    await product.save();
     res.status(201).json({ product });
   });
 };
@@ -85,23 +83,19 @@ const findOrCreateProduct = async (req, res) => {
   res.status(201).json({ product, created });
 };
 
-const getProductReviews = async (req, res) => {
-  const { productId } = req.body;
-  const data = await Product.findAll({
-    include: [
-      {
-        model: Review,
-        as: "review",
-      },
-    ],
-    where: { id: productId },
-  });
-  res.status(200).json({ data });
-};
-
 const getAllProducts = async (req, res) => {
-  const products = await Product.findAll({});
-  res.status(200).json({ products });
+  const { limit } = req.body;
+  let { offset } = req.body; // page number
+  Product.findAndCountAll().then((data) => {
+    const pages = Math.ceil(data.count / limit);
+    offset = limit * (offset - 1);
+    Product.findAll({
+      limit: limit,
+      offset: offset,
+    }).then((products) => {
+      res.status(200).json({ products, count: data.count, pages });
+    });
+  });
 };
 
 const getSingleProduct = async (req, res) => {
@@ -114,34 +108,41 @@ const updateProduct = async (req, res) => {
   const { id } = req.params;
   const form = new multiParty.Form({ uploadDir: dir });
   form.parse(req, async function (err, fields, files) {
+    const fProduct = await Product.findOne({ where: { id: id } });
+    const imageArray = fProduct.image;
+    const sizeArray = fProduct.size;
     if (files.file) {
-      let tempArray = [];
-      for (const f of files.file) {
-        tempArray.push(process.env.IMAGE_BASE_URL + f.path.slice(7));
+      for (const image of files.file) {
+        imageArray.push(process.env.IMAGE_BASE_URL + image.path.slice(7));
+      }
+      for (const size of fields.size) {
+        sizeArray.push(size);
       }
       const product = await Product.update(
         {
-          image: tempArray,
+          image: imageArray,
           title: fields.title[0],
           description: fields.description[0],
           productPrice: fields.productPrice[0],
           salePrice: fields.salePrice[0],
+          // size: sizeArray,
         },
         { where: { id: id } }
       );
-      res.status(201).json({ product });
-    } else {
-      const product = await Product.update(
-        {
-          title: fields.title[0],
-          description: fields.description[0],
-          productPrice: fields.productPrice[0],
-          salePrice: fields.salePrice[0],
-        },
-        { where: { id: id } }
-      );
-      res.status(201).json({ product });
+      return res.status(201).json({ product });
     }
+    const product = await Product.update(
+      {
+        image: files.file,
+        title: fields.title[0],
+        description: fields.description[0],
+        productPrice: fields.productPrice[0],
+        salePrice: fields.salePrice[0],
+        // size: fields.size,
+      },
+      { where: { id: id } }
+    );
+    res.status(201).json({ product });
   });
 };
 
@@ -161,6 +162,7 @@ const uploadFile = async (req, res) => {
     .then(async (result) => {
       for (i = 0; i < result.length; i++) {
         product.push({
+          id: result[i].id,
           image: JSON.parse(result[i].image),
           title: result[i].title,
           salePrice: parseInt(result[i].salePrice),
@@ -194,12 +196,14 @@ const updateFile = async (req, res) => {
           productPrice: result[i].productPrice,
           skuId: result[i].skuId,
           category: result[i].category,
+          size: result[i].size,
         });
       }
       for (const item of product) {
         const foundProduct = await Product.findOne({ where: { id: item.id } });
         if (foundProduct) {
           await foundProduct.update({
+            id: item.id,
             image: JSON.parse(item.image),
             title: item.title,
             salePrice: item.salePrice,
@@ -207,12 +211,13 @@ const updateFile = async (req, res) => {
             productPrice: item.productPrice,
             skuId: item.skuId,
             category: item.category,
+            size: item.size,
           });
         } else {
           return res.status(400).json({ msg: "No product found to update" });
         }
       }
-      res.status(201).json({ msg: "products are updated successfully" });
+      res.status(200).json({ msg: "products are updated successfully" });
     });
 };
 
@@ -246,7 +251,6 @@ module.exports = {
   updateProduct,
   deleteProduct,
   uploadFile,
-  updateFile,
   downloadFile,
   dummy,
 };

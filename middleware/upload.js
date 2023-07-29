@@ -10,7 +10,7 @@ const storage = multer.diskStorage({
 });
 
 const excelFilter = (req, file, cb) => {
-  if (file.mimetype.includes("csv")) {
+  if (file.mimetype.includes("csv") || file.mimetype.includes("jpeg")) {
     cb(null, true);
   } else {
     cb("Please upload only csv file.", false);

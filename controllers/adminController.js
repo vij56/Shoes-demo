@@ -46,8 +46,12 @@ const login = async (req, res) => {
   if (!MatchPassword) {
     return res.status(400).json({ msg: "incorrect password" });
   }
-  const token = jwt.sign({ id: isAdminExists.id, email: isAdminExists.email }, process.env.JWT_SECRET, { expiresIn: 60 });
-  res.status(201).json({ msg: "admin logged in", token });
+  const token = jwt.sign(
+    { id: isAdminExists.id, email: isAdminExists.email },
+    process.env.JWT_SECRET,
+    { expiresIn: 60 }
+  );
+  res.status(201).json({ msg: "logged in", token });
 };
 
 const addProduct = async (req, res) => {
@@ -104,45 +108,96 @@ const getSingleProduct = async (req, res) => {
   res.status(200).json({ product });
 };
 
+// const updateProduct = async (req, res) => {
+//   const { id } = req.params;
+//   const form = new multiParty.Form({ uploadDir: dir });
+//   form.parse(req, async function (err, fields, files) {
+//     const fProduct = await Product.findOne({ where: { id: id } });
+//     const imageArray = fProduct.image;
+//     const sizeArray = fProduct.size;
+//     if (files.file) {
+//       for (const image of files.file) {
+//         imageArray.push(process.env.IMAGE_BASE_URL + image.path.slice(7));
+//       }
+//       for (const size of fields.size) {
+//         sizeArray.push(size);
+//       }
+//       const product = await Product.update(
+//         {
+//           image: imageArray,
+//           title: fields.title[0],
+//           description: fields.description[0],
+//           productPrice: fields.productPrice[0],
+//           salePrice: fields.salePrice[0],
+//           // size: sizeArray,
+//         },
+//         { where: { id: id } }
+//       );
+//       return res.status(201).json({ product });
+//     }
+//     const product = await Product.update(
+//       {
+//         image: files.file,
+//         title: fields.title[0],
+//         description: fields.description[0],
+//         productPrice: fields.productPrice[0],
+//         salePrice: fields.salePrice[0],
+//         size: fields.size,
+//       },
+//       { where: { id: id } }
+//     );
+//     res.status(201).json({ product });
+//   });
+// };
+
 const updateProduct = async (req, res) => {
   const { id } = req.params;
+  const imageArray = [];
+  const sizeArray = [];
   const form = new multiParty.Form({ uploadDir: dir });
   form.parse(req, async function (err, fields, files) {
-    const fProduct = await Product.findOne({ where: { id: id } });
-    const imageArray = fProduct.image;
-    const sizeArray = fProduct.size;
-    if (files.file) {
-      for (const image of files.file) {
-        imageArray.push(process.env.IMAGE_BASE_URL + image.path.slice(7));
-      }
-      for (const size of fields.size) {
-        sizeArray.push(size);
-      }
-      const product = await Product.update(
-        {
-          image: imageArray,
-          title: fields.title[0],
-          description: fields.description[0],
-          productPrice: fields.productPrice[0],
-          salePrice: fields.salePrice[0],
-          // size: sizeArray,
-        },
-        { where: { id: id } }
-      );
-      return res.status(201).json({ product });
-    }
-    const product = await Product.update(
-      {
-        image: files.file,
-        title: fields.title[0],
-        description: fields.description[0],
-        productPrice: fields.productPrice[0],
-        salePrice: fields.salePrice[0],
-        size: fields.size,
-      },
-      { where: { id: id } }
-    );
-    res.status(201).json({ product });
+    await Product.findByPk(id)
+      .then((product) => {
+        if (product) {
+          if (files.file) {
+            for (const image of files.file) {
+              imageArray.push(
+                ...product.image,
+                process.env.IMAGE_BASE_URL + image.path.slice(7)
+              );
+            }
+            product.update({
+              image: imageArray,
+              title: fields.title[0],
+              description: fields.description[0],
+              productPrice: fields.productPrice[0],
+              salePrice: fields.salePrice[0],
+              // size: product.size,
+            });
+            return res.status(200).json(product);
+          }
+          // const stringWithoutBrackets = fields.size[0].replace(/\[|\]/g, ""); // remove square brackets from the string
+          // const resultArray = JSON.parse("[" + stringWithoutBrackets + "]"); // parse the modified string into an array
+          // const a = Object.values(resultArray);
+          // for (const size of resultArray) {
+          //   sizeArray.push(size);
+          // }
+          product.update({
+            image: files.file,
+            title: fields.title[0],
+            description: fields.description[0],
+            productPrice: fields.productPrice[0],
+            salePrice: fields.salePrice[0],
+            // size: sizeArray,
+          });
+          return res.status(200).json(product);
+        } else {
+          return res.status(404).json({ msg: "no product found" });
+        }
+      })
+      .catch((err) => {
+        res.status(500).json({ err: err.message });
+      });
   });
 };
 

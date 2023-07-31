@@ -4,6 +4,7 @@ const db = require("../models");
 const multiParty = require("multiparty");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const path = require("path");
 
 const fastcsv = require("fast-csv");
 const fs = require("fs");
@@ -48,8 +49,7 @@ const login = async (req, res) => {
   }
   const token = jwt.sign(
     { id: isAdminExists.id, email: isAdminExists.email },
-    process.env.JWT_SECRET,
-    { expiresIn: 60 }
+    process.env.JWT_SECRET
   );
   res.status(201).json({ msg: "logged in", token });
 };
@@ -88,18 +88,8 @@ const findOrCreateProduct = async (req, res) => {
 };
 
 const getAllProducts = async (req, res) => {
-  const { limit } = req.body;
-  let { offset } = req.body; // page number
-  Product.findAndCountAll().then((data) => {
-    const pages = Math.ceil(data.count / limit);
-    offset = limit * (offset - 1);
-    Product.findAll({
-      limit: limit,
-      offset: offset,
-    }).then((products) => {
-      res.status(200).json({ products, count: data.count, pages });
-    });
-  });
+  const products = await Product.findAll();
+  res.status(200).json({ products });
 };
 
 const getSingleProduct = async (req, res) => {
@@ -176,12 +166,6 @@ const updateProduct = async (req, res) => {
             });
             return res.status(200).json(product);
           }
-          // const stringWithoutBrackets = fields.size[0].replace(/\[|\]/g, ""); // remove square brackets from the string
-          // const resultArray = JSON.parse("[" + stringWithoutBrackets + "]"); // parse the modified string into an array
-          // const a = Object.values(resultArray);
-          // for (const size of resultArray) {
-          //   sizeArray.push(size);
-          // }
           product.update({
             image: files.file,
             title: fields.title[0],
@@ -219,6 +203,7 @@ const uploadFile = async (req, res) => {
         const image = result[i].image.split(",");
         const size = result[i].size.split(",");
         product.push({
+          id: result[i].id,
           image: image,
           title: result[i].title,
           salePrice: parseInt(result[i].salePrice),
@@ -286,16 +271,10 @@ const downloadFile = async (req, res) => {
       console.log("Write to itbuddies.csv successfully!");
     })
     .pipe(ws);
-  // const file_header = ["Id", "Image", "Title", "Sale Price", "Description", "Product Price", "Sku ID", "Category"];
-  // const json_data = new data_exporter({ file_header });
-  // const csv_data = json_data.parse(mysql_data);
-  // res.setHeader("Content-Type", "text/csv");
-  // res.setHeader("Content-Disposition", "attachment; filename=sample_data.csv");
-  // res.status(200).json({ csv_data });
-};
-
-const dummy = (req, res) => {
-  res.status(200).json(req.admin);
+  const options = {
+    root: path.join(__dirname),
+  };
+  res.status(200).sendFile("itbuddies.csv", options);
 };
 
 module.exports = {
@@ -307,6 +286,4 @@ module.exports = {
   updateProduct,
   deleteProduct,
   uploadFile,
-  downloadFile,
-  dummy,
 };

@@ -33,6 +33,7 @@ db.products = require("./Product.js")(sequelize, DataTypes);
 db.cart = require("./Cart.js")(sequelize, DataTypes);
 db.order = require("./Order.js")(sequelize, DataTypes);
 db.admin = require("./Admin.js")(sequelize, DataTypes);
+db.advertize = require("./Advertize.js")(sequelize, DataTypes);
 
 db.products.hasOne(db.cart);
 db.cart.belongsTo(db.products);

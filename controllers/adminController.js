@@ -59,19 +59,21 @@ const addProduct = async (req, res) => {
   form.parse(req, async function (err, fields, files) {
     if (err) return res.status(500).json({ err: err.message });
     let imageArray = [];
-    for (const image of files.file) {
-      imageArray.push(process.env.LIVE_IMAGE_BASE_URL + image.path.slice(7));
+    if (files.file) {
+      for (const image of files.file) {
+        imageArray.push(process.env.IMAGE_BASE_URL + image.path.slice(7));
+      }
+      const product = await Product.create({
+        image: imageArray,
+        title: fields.title[0],
+        description: fields.description[0],
+        productPrice: fields.productPrice[0],
+        salePrice: fields.salePrice[0],
+        skuId: fields.sku[0],
+        size: fields.size[0],
+      });
+      res.status(201).json({ product });
     }
-    const product = await Product.create({
-      image: imageArray,
-      title: fields.title[0],
-      description: fields.description[0],
-      productPrice: fields.productPrice[0],
-      salePrice: fields.salePrice[0],
-      skuId: fields.sku[0],
-      size: fields.size[0],
-    });
-    res.status(201).json({ product });
   });
 };
 
@@ -162,7 +164,7 @@ const updateProduct = async (req, res) => {
               description: fields.description[0],
               productPrice: fields.productPrice[0],
               salePrice: fields.salePrice[0],
-              // size: product.size,
+              size: fields.size.toString(),
             });
             return res.status(200).json(product);
           }
@@ -172,7 +174,7 @@ const updateProduct = async (req, res) => {
             description: fields.description[0],
             productPrice: fields.productPrice[0],
             salePrice: fields.salePrice[0],
-            // size: sizeArray,
+            size: fields.size[0],
           });
           return res.status(200).json(product);
         } else {
@@ -203,7 +205,6 @@ const uploadFile = async (req, res) => {
         const image = result[i].image.split(",");
         const size = result[i].size.split(",");
         product.push({
-          id: result[i].id,
           image: image,
           title: result[i].title,
           salePrice: parseInt(result[i].salePrice),
@@ -211,7 +212,7 @@ const uploadFile = async (req, res) => {
           productPrice: result[i].productPrice,
           skuId: result[i].skuId,
           category: result[i].category,
-          // size: size,
+          size: JSON.stringify(size),
         });
       }
       const products = await Product.bulkCreate(product);

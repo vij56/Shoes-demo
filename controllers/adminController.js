@@ -60,7 +60,7 @@ const addProduct = async (req, res) => {
     if (err) return res.status(500).json({ err: err.message });
     let imageArray = [];
     for (const image of files.file) {
-      imageArray.push(process.env.IMAGE_BASE_URL + image.path.slice(7));
+      imageArray.push(process.env.LIVE_IMAGE_BASE_URL + image.path.slice(7));
     }
     const product = await Product.create({
       image: imageArray,

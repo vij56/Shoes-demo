@@ -38,6 +38,6 @@ db.advertize = require("./Advertize.js")(sequelize, DataTypes);
 db.products.hasOne(db.cart);
 db.cart.belongsTo(db.products);
 
-db.sequelize.sync({ force: false }).then(() => console.log("sync is done."));
+db.sequelize.sync().then(() => console.log("sync is done."));
 
 module.exports = db;

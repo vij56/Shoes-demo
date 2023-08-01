@@ -211,7 +211,7 @@ const uploadFile = async (req, res) => {
           productPrice: result[i].productPrice,
           skuId: result[i].skuId,
           category: result[i].category,
-          size: size,
+          // size: size,
         });
       }
       const products = await Product.bulkCreate(product);

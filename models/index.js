@@ -2,7 +2,7 @@ require("dotenv").config();
 
 const { Sequelize, DataTypes } = require("sequelize");
 
-const sequelize = new Sequelize("next", "root", process.env.LIVE_PASSWORD, {
+const sequelize = new Sequelize("next", "root", process.env.PASSWORD, {
   host: "localhost",
   logging: false,
   dialect: "mysql",
@@ -33,6 +33,6 @@ db.advertize = require("./Advertize.js")(sequelize, DataTypes);
 db.products.hasOne(db.cart);
 db.cart.belongsTo(db.products);
 
-db.sequelize.sync().then(() => console.log("sync is done."));
+db.sequelize.sync({ force: true }).then(() => console.log("sync is done."));
 
 module.exports = db;

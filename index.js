@@ -13,8 +13,13 @@ const orderRouter = require("./routes/orderRoutes.js");
 const adminRouter = require("./routes/adminRoutes.js");
 const advertizeRouter = require("./routes/advertizeRoutes.js");
 
+const corsOptions = {
+  origin: "https://shoes-website-admin-r6cea3ezw-pavantank7016.vercel.app/",
+  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+};
+
 app.use(morgan("tiny"));
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

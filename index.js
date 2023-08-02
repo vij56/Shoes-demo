@@ -25,6 +25,10 @@ app.use("/api/admin", adminRouter, advertizeRouter);
 
 const port = process.env.PORT || 8080;
 
+app.get("/", (req, res) => {
+  res.status(200).json({ msg: "Hello World!" });
+});
+
 app.listen(port, () => {
   console.log(`server is running on http://localhost:${port}`);
 });

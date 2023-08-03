@@ -2,7 +2,7 @@ require("dotenv").config();
 
 const { Sequelize, DataTypes } = require("sequelize");
 
-const sequelize = new Sequelize("next", "next", process.env.PASSWORD, {
+const sequelize = new Sequelize("next", "root", process.env.PASSWORD, {
   host: "localhost",
   logging: false,
   dialect: "mysql",
@@ -35,6 +35,6 @@ db.cart.belongsTo(db.products);
 db.order.hasMany(db.products);
 db.products.belongsTo(db.order);
 
-db.sequelize.sync().then(() => console.log("sync is done."));
+db.sequelize.sync({ force: false }).then(() => console.log("sync is done."));
 
 module.exports = db;

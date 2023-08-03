@@ -7,11 +7,10 @@ const createCart = async (req, res) => {
   const { productId, size, quantity, price, userId } = req.body;
   const cart = await Cart.findAll();
   let filteredProduct = cart.filter((item) => item.productId === productId);
-
   if (
     cart.length > 0 &&
     filteredProduct[0]?.productId === productId &&
-    filteredProduct[0]?.size === size
+    filteredProduct[0]?.size == size
   ) {
     const updatedCart = await Cart.update(
       {
@@ -32,6 +31,7 @@ const createCart = async (req, res) => {
       price,
       userId,
     });
+    console.log("==>", cart);
     if (quantity > 1) {
       updatedCart.subTotal = updatedCart.quantity * updatedCart.price;
       await updatedCart.save();

@@ -12,7 +12,6 @@ const cartRouter = require("./routes/cartRoutes.js");
 const orderRouter = require("./routes/orderRoutes.js");
 const adminRouter = require("./routes/adminRoutes.js");
 const advertizeRouter = require("./routes/advertizeRoutes.js");
-// const orderStatusRouter = require("./routes/orderStatusRoutes.js");
 
 app.use(morgan("tiny"));
 app.use(cors());

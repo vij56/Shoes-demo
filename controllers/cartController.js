@@ -31,7 +31,6 @@ const createCart = async (req, res) => {
       price,
       userId,
     });
-    console.log("==>", cart);
     if (quantity > 1) {
       updatedCart.subTotal = updatedCart.quantity * updatedCart.price;
       await updatedCart.save();

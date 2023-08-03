@@ -71,9 +71,18 @@ const retrieveAllOrders = async (req, res) => {
   res.status(200).json({ orders });
 };
 
+const getUserOrder = async (req, res) => {
+  const { userId } = req.params;
+  const orders = await Order.findAll({
+    where: { userId: userId },
+  });
+  res.status(200).json({ orders });
+};
+
 module.exports = {
   createOrder,
   retrieveOrder,
   getCartFromOrder,
   retrieveAllOrders,
+  getUserOrder,
 };

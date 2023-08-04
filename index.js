@@ -12,6 +12,7 @@ const cartRouter = require("./routes/cartRoutes.js");
 const orderRouter = require("./routes/orderRoutes.js");
 const adminRouter = require("./routes/adminRoutes.js");
 const advertizeRouter = require("./routes/advertizeRoutes.js");
+const settingsRouter = require("./routes/settingRoutes.js");
 
 app.use(morgan("tiny"));
 app.use(cors());
@@ -22,6 +23,7 @@ app.use(express.static("public"));
 
 app.use("/api", productRouter, cartRouter, orderRouter);
 app.use("/api/admin", adminRouter, advertizeRouter);
+app.use("/api/settings", settingsRouter);
 
 const port = process.env.PORT || 8080;
 

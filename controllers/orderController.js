@@ -8,7 +8,6 @@ const createOrder = async (req, res) => {
   const {
     firstName,
     lastName,
-    companyName,
     streetAddress,
     city,
     state,
@@ -21,6 +20,7 @@ const createOrder = async (req, res) => {
     toc,
     userId,
     cartId,
+    country,
   } = req.body;
   if (toc) {
     for (id of cartId) {
@@ -29,7 +29,6 @@ const createOrder = async (req, res) => {
     const order = await Order.create({
       firstName,
       lastName,
-      companyName,
       streetAddress,
       city,
       state,
@@ -41,6 +40,7 @@ const createOrder = async (req, res) => {
       total,
       toc,
       userId,
+      country,
     });
     return res.status(201).json(order);
   }

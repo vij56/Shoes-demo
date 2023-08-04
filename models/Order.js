@@ -6,9 +6,6 @@ module.exports = (sequelize, DataTypes) => {
     lastName: {
       type: DataTypes.STRING,
     },
-    companyName: {
-      type: DataTypes.TEXT,
-    },
     country: {
       type: DataTypes.STRING,
       defaultValue: "India",

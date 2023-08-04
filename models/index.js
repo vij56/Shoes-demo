@@ -33,9 +33,7 @@ db.settings = require("./Settings.js")(sequelize, DataTypes);
 
 db.products.hasOne(db.cart);
 db.cart.belongsTo(db.products);
-db.order.hasMany(db.products);
-db.products.belongsTo(db.order);
 
-db.sequelize.sync({ force: true }).then(() => console.log("sync is done."));
+db.sequelize.sync().then(() => console.log("sync is done."));
 
 module.exports = db;

@@ -42,6 +42,8 @@ const createOrder = async (req, res) => {
       userId,
       country,
     });
+    order.trackingId = order.createdAt.replace(/[:/ ]/g, "");
+    await order.save();
     return res.status(201).json(order);
   }
 };

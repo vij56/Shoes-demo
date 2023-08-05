@@ -22,8 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 app.use("/api", productRouter, cartRouter, orderRouter);
-app.use("/api/admin", adminRouter, advertizeRouter);
-app.use("/api/settings", settingsRouter);
+app.use("/api/admin", adminRouter, advertizeRouter, settingsRouter);
 
 const port = process.env.PORT || 8080;
 

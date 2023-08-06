@@ -69,7 +69,7 @@ const shortProducts = async (req, res) => {
     query = [["popularity", "DESC"]];
   }
   order = query;
-  Product.findAndCountAll().then((data) => {
+  Product.findAndCountAll({ where: { category: category } }).then((data) => {
     const pages = Math.ceil(data.count / limit);
     offset = limit * (offset - 1);
     Product.findAll({

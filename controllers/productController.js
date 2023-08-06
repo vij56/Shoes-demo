@@ -54,7 +54,8 @@ const getSingleProduct = async (req, res) => {
 };
 
 const shortProducts = async (req, res) => {
-  const { sort, limit, category } = req.body;
+  const { category } = req.params;
+  const { sort, limit } = req.body;
   let { offset } = req.body; // page number
   let order;
   let query;

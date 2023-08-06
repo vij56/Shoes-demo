@@ -71,6 +71,7 @@ const addProduct = async (req, res) => {
         salePrice: fields.salePrice[0],
         skuId: fields.sku[0],
         size: fields.size[0],
+        category: fields.category[0],
       });
       res.status(201).json({ product });
     }
@@ -165,6 +166,7 @@ const updateProduct = async (req, res) => {
               productPrice: fields.productPrice[0],
               salePrice: fields.salePrice[0],
               size: fields.size.toString(),
+              category: fields.category[0],
             });
             return res.status(200).json(product);
           }
@@ -175,6 +177,7 @@ const updateProduct = async (req, res) => {
             productPrice: fields.productPrice[0],
             salePrice: fields.salePrice[0],
             size: fields.size[0],
+            category: fields.category[0],
           });
           return res.status(200).json(product);
         } else {

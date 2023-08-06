@@ -54,7 +54,7 @@ const getSingleProduct = async (req, res) => {
 };
 
 const shortProducts = async (req, res) => {
-  const { sort, limit } = req.body;
+  const { sort, limit, category } = req.body;
   let { offset } = req.body; // page number
   let order;
   let query;
@@ -75,6 +75,7 @@ const shortProducts = async (req, res) => {
       limit: limit,
       offset: offset,
       order: order,
+      where: { category: category },
     }).then((products) => {
       res.status(200).json({
         products,

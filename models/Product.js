@@ -42,7 +42,6 @@ module.exports = (sequelize, DataTypes) => {
     },
     category: {
       type: DataTypes.STRING,
-      defaultValue: "Men Footwear",
     },
   });
   return Product;

@@ -43,6 +43,14 @@ module.exports = (sequelize, DataTypes) => {
     category: {
       type: DataTypes.STRING,
     },
+    attribute: {
+      type: DataTypes.STRING,
+      get() {
+        // When retrieving the value, parse the string to an array
+        const data = this.getDataValue("attribute");
+        return data ? JSON.parse(data) : [];
+      },
+    },
   });
   return Product;
 };

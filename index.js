@@ -14,6 +14,7 @@ const adminRouter = require("./routes/adminRoutes.js");
 const advertizeRouter = require("./routes/advertizeRoutes.js");
 const settingsRouter = require("./routes/settingRoutes.js");
 const categoryRouter = require("./routes/categoryRoutes.js");
+const attributesRouter = require("./routes/attributesRoutes.js");
 
 app.use(morgan("tiny"));
 app.use(cors());
@@ -28,7 +29,8 @@ app.use(
   adminRouter,
   advertizeRouter,
   settingsRouter,
-  categoryRouter
+  categoryRouter,
+  attributesRouter
 );
 
 const port = process.env.PORT || 8080;

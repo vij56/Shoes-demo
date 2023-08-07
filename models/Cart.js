@@ -17,6 +17,9 @@ module.exports = (sequelize, DataTypes) => {
     userId: {
       type: DataTypes.STRING,
     },
+    attribute: {
+      type: DataTypes.STRING,
+    },
   });
   return Cart;
 };

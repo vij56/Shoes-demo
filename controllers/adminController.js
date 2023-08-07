@@ -72,6 +72,7 @@ const addProduct = async (req, res) => {
         skuId: fields.sku[0],
         size: fields.size[0],
         category: fields.category[0],
+        attribute: fields.attribute?.length > 0 ? fields.attribute[0] : [],
       });
       res.status(201).json({ product });
     }
@@ -167,6 +168,7 @@ const updateProduct = async (req, res) => {
               salePrice: fields.salePrice[0],
               size: fields.size.toString(),
               category: fields.category[0],
+              attribute: fields.attribute.toString(),
             });
             return res.status(200).json(product);
           }
@@ -178,6 +180,7 @@ const updateProduct = async (req, res) => {
             salePrice: fields.salePrice[0],
             size: fields.size[0],
             category: fields.category[0],
+            attribute: fields.attribute[0],
           });
           return res.status(200).json(product);
         } else {
@@ -207,6 +210,7 @@ const uploadFile = async (req, res) => {
       for (i = 0; i < result.length; i++) {
         const image = result[i].image.split(",");
         const size = result[i].size.split(",");
+        const attribute = result[i].attribute.split(",");
         product.push({
           image: image,
           title: result[i].title,
@@ -216,6 +220,7 @@ const uploadFile = async (req, res) => {
           skuId: result[i].skuId,
           category: result[i].category,
           size: JSON.stringify(size),
+          attribute: JSON.stringify(attribute),
         });
       }
       const products = await Product.bulkCreate(product);

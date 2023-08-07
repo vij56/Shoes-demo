@@ -4,42 +4,52 @@ const Cart = db.cart;
 const Product = db.products;
 
 const createCart = async (req, res) => {
-  const { productId, size, quantity, price, userId } = req.body;
-  const cart = await Cart.findAll();
-  let filteredProduct = cart.filter((item) => item.productId === productId);
-  if (
-    cart.length > 0 &&
-    filteredProduct[0]?.productId === productId &&
-    filteredProduct[0]?.size == size
-  ) {
-    const updatedCart = await Cart.update(
-      {
-        quantity: filteredProduct[0]?.quantity + quantity,
-        subTotal:
-          filteredProduct[0]?.price * (filteredProduct[0]?.quantity + quantity),
-      },
-      {
-        where: { id: filteredProduct[0].id },
+  const { productId, size, quantity, price, userId, attribute } = req.body;
+
+  await Cart.findAll()
+    .then(async (result) => {
+      let filteredProduct = result.filter(
+        (item) => item.size == size && item.attribute == attribute
+      );
+      let product = result.filter((item) => item.productId == productId);
+      console.log("==>size", filteredProduct);
+      if (
+        result.length > 0 &&
+        product[0]?.productId === productId &&
+        filteredProduct[0]?.size == size
+      ) {
+        const updatedCart = await Cart.update(
+          {
+            quantity: filteredProduct[0]?.quantity + quantity,
+            subTotal:
+              filteredProduct[0]?.price *
+              (filteredProduct[0]?.quantity + quantity),
+          },
+          {
+            where: { id: filteredProduct[0].id },
+          }
+        );
+        return res.status(200).json({ updatedCart });
+      } else {
+        const updatedCart = await Cart.create({
+          productId,
+          size,
+          quantity,
+          price,
+          userId,
+          attribute,
+        });
+        if (quantity > 1) {
+          updatedCart.subTotal = updatedCart.quantity * updatedCart.price;
+          await updatedCart.save();
+        } else {
+          updatedCart.subTotal = price;
+          await updatedCart.save();
+        }
+        return res.status(201).json({ updatedCart });
       }
-    );
-    return res.status(200).json({ updatedCart });
-  } else {
-    const updatedCart = await Cart.create({
-      productId,
-      size,
-      quantity,
-      price,
-      userId,
-    });
-    if (quantity > 1) {
-      updatedCart.subTotal = updatedCart.quantity * updatedCart.price;
-      await updatedCart.save();
-    } else {
-      updatedCart.subTotal = price;
-      await updatedCart.save();
-    }
-    return res.status(201).json({ updatedCart });
-  }
+    })
+    .catch((e) => res.status(500).json({ err: e }));
 };
 
 const getAllProductsFromCart = async (req, res) => {

@@ -54,6 +54,7 @@ const getSingleProduct = async (req, res) => {
 };
 
 const shortProducts = async (req, res) => {
+  const { category } = req.params;
   const { sort, limit } = req.body;
   let { offset } = req.body; // page number
   let order;
@@ -68,13 +69,14 @@ const shortProducts = async (req, res) => {
     query = [["popularity", "DESC"]];
   }
   order = query;
-  Product.findAndCountAll().then((data) => {
+  Product.findAndCountAll({ where: { category: category } }).then((data) => {
     const pages = Math.ceil(data.count / limit);
     offset = limit * (offset - 1);
     Product.findAll({
       limit: limit,
       offset: offset,
       order: order,
+      where: { category: category },
     }).then((products) => {
       res.status(200).json({
         products,

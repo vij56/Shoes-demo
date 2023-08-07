@@ -36,6 +36,7 @@ db.order = require("./Order.js")(sequelize, DataTypes);
 db.admin = require("./Admin.js")(sequelize, DataTypes);
 db.advertize = require("./Advertize.js")(sequelize, DataTypes);
 db.settings = require("./Settings.js")(sequelize, DataTypes);
+db.category = require("./Category.js")(sequelize, DataTypes);
 
 db.products.hasOne(db.cart);
 db.cart.belongsTo(db.products);

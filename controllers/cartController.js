@@ -7,12 +7,11 @@ const createCart = async (req, res) => {
   const { productId, size, quantity, price, userId, attribute } = req.body;
 
   await Cart.findAll()
-    .then(async (result) => {
+    .then(async result => {
       let filteredProduct = result.filter(
-        (item) => item.size == size && item.attribute == attribute
+        item => item.size == size && item.attribute == attribute
       );
-      let product = result.filter((item) => item.productId == productId);
-      console.log("==>size", filteredProduct);
+      let product = result.filter(item => item.productId == productId);
       if (
         result.length > 0 &&
         product[0]?.productId === productId &&
@@ -49,7 +48,7 @@ const createCart = async (req, res) => {
         return res.status(201).json({ updatedCart });
       }
     })
-    .catch((e) => res.status(500).json({ err: e }));
+    .catch(e => res.status(500).json({ err: e }));
 };
 
 const getAllProductsFromCart = async (req, res) => {

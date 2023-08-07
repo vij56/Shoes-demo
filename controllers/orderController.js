@@ -83,7 +83,6 @@ const getUserOrder = async (req, res) => {
 
 const trackOrder = async (req, res) => {
   const { trackingId } = req.body;
-  console.log(trackingId);
   const orderHistory = await Order.findOne({
     where: { trackingId: trackingId },
   });

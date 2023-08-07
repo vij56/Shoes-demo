@@ -4,6 +4,7 @@ const Attributes = db.attributes;
 
 const createAttributes = async (req, res) => {
   const { name } = req.body;
+  console.log("world");
   const attribute = await Attributes.create({
     name,
   });
@@ -11,6 +12,7 @@ const createAttributes = async (req, res) => {
 };
 
 const getAttributes = async (req, res) => {
+  console.log("hello");
   const attribute = await Attributes.findAll({});
   res.status(201).json(attribute);
 };

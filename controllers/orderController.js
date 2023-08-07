@@ -81,10 +81,20 @@ const getUserOrder = async (req, res) => {
   res.status(200).json({ orders });
 };
 
+const trackOrder = async (req, res) => {
+  const { trackingId } = req.body;
+  console.log(trackingId);
+  const orderHistory = await Order.findOne({
+    where: { trackingId: trackingId },
+  });
+  res.status(200).json(orderHistory);
+};
+
 module.exports = {
   createOrder,
   retrieveOrder,
   getCartFromOrder,
   retrieveAllOrders,
   getUserOrder,
+  trackOrder,
 };

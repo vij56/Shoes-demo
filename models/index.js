@@ -5,7 +5,7 @@ const { Sequelize, DataTypes } = require("sequelize");
 
 const sequelize = new Sequelize(
   process.env.DATABASE,
-  process.env.USER,
+  process.env.USERNAME,
   process.env.PASSWORD,
   {
     host: "localhost",
@@ -23,7 +23,7 @@ const sequelize = new Sequelize(
 sequelize
   .authenticate()
   .then(() => console.log("Connection has been established successfully."))
-  .catch((err) => console.error("Unable to connect to the database:", err));
+  .catch(err => console.error("Unable to connect to the database:", err));
 
 const db = {};
 
@@ -40,6 +40,8 @@ db.settings = require("./Settings.js")(sequelize, DataTypes);
 db.products.hasOne(db.cart);
 db.cart.belongsTo(db.products);
 
-db.sequelize.sync().then(() => console.log("sync is done."));
+db.sequelize.sync({ force: false }).then(() => console.log("sync is done."));
 
 module.exports = db;
+
+// 20230805034954

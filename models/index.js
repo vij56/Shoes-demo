@@ -5,7 +5,7 @@ const { Sequelize, DataTypes } = require("sequelize");
 
 const sequelize = new Sequelize(
   process.env.DATABASE,
-  "root",
+  process.env.USER,
   process.env.PASSWORD,
   {
     host: "localhost",
@@ -23,7 +23,7 @@ const sequelize = new Sequelize(
 sequelize
   .authenticate()
   .then(() => console.log("Connection has been established successfully."))
-  .catch(err => console.error("Unable to connect to the database:", err));
+  .catch((err) => console.error("Unable to connect to the database:", err));
 
 const db = {};
 

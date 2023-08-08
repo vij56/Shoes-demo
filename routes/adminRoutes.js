@@ -26,5 +26,10 @@ router.post(
 // router.get("/file/download", authentication, adminController.downloadFile);
 router.post("/contents", authentication, adminController.createAllContents);
 router.get("/contents", authentication, adminController.retrieveAllContents);
+router.patch(
+  "/contents/:id",
+  authentication,
+  adminController.updateAllContents
+);
 
 module.exports = router;

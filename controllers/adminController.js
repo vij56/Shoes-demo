@@ -98,7 +98,7 @@ const updateProduct = async (req, res) => {
   const form = new multiParty.Form({ uploadDir: dir });
   form.parse(req, async function (err, fields, files) {
     await Product.findByPk(id)
-      .then((product) => {
+      .then(product => {
         if (product) {
           if (files.file) {
             for (const image of files.file) {
@@ -134,7 +134,7 @@ const updateProduct = async (req, res) => {
           return res.status(404).json({ msg: "no product found" });
         }
       })
-      .catch((err) => {
+      .catch(err => {
         res.status(500).json({ err: err.message });
       });
   });
@@ -153,7 +153,7 @@ const uploadFile = async (req, res) => {
   const product = [];
   csv()
     .fromFile(req.file.path)
-    .then(async (result) => {
+    .then(async result => {
       for (i = 0; i < result.length; i++) {
         const image = result[i].image.split(",");
         const size = result[i].size.split(",");
@@ -189,7 +189,7 @@ const updateFile = async (req, res) => {
   const product = [];
   csv()
     .fromFile(req.file.path)
-    .then(async (result) => {
+    .then(async result => {
       for (i = 0; i < result.length; i++) {
         product.push({
           id: result[i].id,
@@ -254,6 +254,27 @@ const retrieveAllContents = async (req, res) => {
   res.status(200).json(contents);
 };
 
+const updateAllContents = async (req, res) => {
+  const { id } = req.params;
+  await PageContents.findByPk(id)
+    .then(async contents => {
+      (contents.about_us = req.body.about_us),
+        (contents.contact_us = req.body.about_us),
+        (contents.faqs = req.body.faqs),
+        (contents.disclaimer = req.body.disclaimer),
+        (contents.return_refund_cancellection_shipping_policy =
+          req.body.return_refund_cancellection_shipping_policy),
+        (contents.privacy_policy = req.body.privacy_policy),
+        (contents.terms_and_conditions = req.body.terms_and_conditions),
+        (contents.logo_path_name = req.body.logo_path_name),
+        await contents.save();
+      return res.status(200).json({ msg: "updated" });
+    })
+    .catch(err => {
+      res.status(500).json({ msg: err.message });
+    });
+};
+
 module.exports = {
   signUp,
   login,
@@ -265,4 +286,5 @@ module.exports = {
   uploadFile,
   createAllContents,
   retrieveAllContents,
+  updateAllContents,
 };

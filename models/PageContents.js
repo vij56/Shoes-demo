@@ -24,6 +24,12 @@ module.exports = (sequelize, DataTypes) => {
     logo_path_name: {
       type: DataTypes.TEXT("long"),
     },
+    brand_tagline: {
+      type: DataTypes.TEXT("long"),
+    },
+    brand_favicon: {
+      type: DataTypes.TEXT("long"),
+    },
   });
   return PageContent;
 };

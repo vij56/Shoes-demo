@@ -235,6 +235,8 @@ const createAllContents = async (req, res) => {
     privacy_policy,
     terms_and_conditions,
     logo_path_name,
+    brand_tagline,
+    brand_favicon,
   } = req.body;
   const contents = await PageContents.create({
     about_us,
@@ -245,6 +247,8 @@ const createAllContents = async (req, res) => {
     privacy_policy,
     terms_and_conditions,
     logo_path_name,
+    brand_tagline,
+    brand_favicon,
   });
   res.status(201).json(contents);
 };
@@ -267,6 +271,8 @@ const updateAllContents = async (req, res) => {
         (contents.privacy_policy = req.body.privacy_policy),
         (contents.terms_and_conditions = req.body.terms_and_conditions),
         (contents.logo_path_name = req.body.logo_path_name),
+        (contents.brand_tagline = req.body.brand_tagline),
+        (contents.brand_favicon = req.body.brand_favicon),
         await contents.save();
       return res.status(200).json({ msg: "updated" });
     })

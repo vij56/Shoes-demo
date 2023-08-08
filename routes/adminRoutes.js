@@ -24,5 +24,7 @@ router.post(
 //   adminController.uploadMultipleFiles
 // );
 // router.get("/file/download", authentication, adminController.downloadFile);
+router.post("/contents", authentication, adminController.createAllContents);
+router.get("/contents", authentication, adminController.retrieveAllContents);
 
 module.exports = router;

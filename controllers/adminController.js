@@ -12,6 +12,7 @@ const ws = fs.createWriteStream("itbuddies.csv");
 
 const Product = db.products;
 const Admin = db.admin;
+const PageContents = db.pageContents;
 
 const dir = "./public/images";
 
@@ -224,6 +225,35 @@ const updateFile = async (req, res) => {
     });
 };
 
+const createAllContents = async (req, res) => {
+  const {
+    about_us,
+    contact_us,
+    faqs,
+    disclaimer,
+    return_refund_cancellection_shipping_policy,
+    privacy_policy,
+    terms_and_conditions,
+    logo_path_name,
+  } = req.body;
+  const contents = await PageContents.create({
+    about_us,
+    contact_us,
+    faqs,
+    disclaimer,
+    return_refund_cancellection_shipping_policy,
+    privacy_policy,
+    terms_and_conditions,
+    logo_path_name,
+  });
+  res.status(201).json(contents);
+};
+
+const retrieveAllContents = async (req, res) => {
+  const contents = await PageContents.findAll({});
+  res.status(200).json(contents);
+};
+
 module.exports = {
   signUp,
   login,
@@ -233,4 +263,6 @@ module.exports = {
   updateProduct,
   deleteProduct,
   uploadFile,
+  createAllContents,
+  retrieveAllContents,
 };

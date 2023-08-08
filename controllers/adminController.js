@@ -79,18 +79,6 @@ const addProduct = async (req, res) => {
   });
 };
 
-const findOrCreateProduct = async (req, res) => {
-  // The method findOrCreate will create an entry in the table unless it can find one fulfilling the query options. In both cases, it will return an instance (either the found instance or the created instance) and a boolean indicating whether that instance was created or already existed.
-  const [product, created] = await Product.findOrCreate({
-    // The where option is considered for finding the entry, and the defaults option is used to define what must be created in case nothing was found. If the defaults do not contain values for every column, Sequelize will take the values given to where (if present).
-    where: { price: req.body.price },
-    defaults: {
-      title: "default title",
-    },
-  });
-  res.status(201).json({ product, created });
-};
-
 const getAllProducts = async (req, res) => {
   const products = await Product.findAll();
   res.status(200).json({ products });
@@ -101,48 +89,6 @@ const getSingleProduct = async (req, res) => {
   const product = await Product.findOne({ where: { id: id } });
   res.status(200).json({ product });
 };
-
-// const updateProduct = async (req, res) => {
-//   const { id } = req.params;
-//   const form = new multiParty.Form({ uploadDir: dir });
-//   form.parse(req, async function (err, fields, files) {
-//     const fProduct = await Product.findOne({ where: { id: id } });
-//     const imageArray = fProduct.image;
-//     const sizeArray = fProduct.size;
-//     if (files.file) {
-//       for (const image of files.file) {
-//         imageArray.push(process.env.IMAGE_BASE_URL + image.path.slice(7));
-//       }
-//       for (const size of fields.size) {
-//         sizeArray.push(size);
-//       }
-//       const product = await Product.update(
-//         {
-//           image: imageArray,
-//           title: fields.title[0],
-//           description: fields.description[0],
-//           productPrice: fields.productPrice[0],
-//           salePrice: fields.salePrice[0],
-//           // size: sizeArray,
-//         },
-//         { where: { id: id } }
-//       );
-//       return res.status(201).json({ product });
-//     }
-//     const product = await Product.update(
-//       {
-//         image: files.file,
-//         title: fields.title[0],
-//         description: fields.description[0],
-//         productPrice: fields.productPrice[0],
-//         salePrice: fields.salePrice[0],
-//         size: fields.size,
-//       },
-//       { where: { id: id } }
-//     );
-//     res.status(201).json({ product });
-//   });
-// };
 
 const updateProduct = async (req, res) => {
   const { id } = req.params;
@@ -210,7 +156,14 @@ const uploadFile = async (req, res) => {
       for (i = 0; i < result.length; i++) {
         const image = result[i].image.split(",");
         const size = result[i].size.split(",");
-        const attribute = result[i].attribute.split(",");
+        console.log(
+          "159 ===>",
+          result[i].attribute,
+          typeof result[i].attribute
+        );
+        const attribute = !result[i].attribute
+          ? []
+          : result[i].attribute.split(",");
         product.push({
           image: image,
           title: result[i].title,
@@ -269,21 +222,6 @@ const updateFile = async (req, res) => {
       }
       res.status(200).json({ msg: "products are updated successfully" });
     });
-};
-
-const downloadFile = async (req, res) => {
-  const prods = await Product.findAll({});
-  const mysql_data = JSON.parse(JSON.stringify(prods));
-  fastcsv
-    .write(mysql_data, { headers: true })
-    .on("finish", function () {
-      console.log("Write to itbuddies.csv successfully!");
-    })
-    .pipe(ws);
-  const options = {
-    root: path.join(__dirname),
-  };
-  res.status(200).sendFile("itbuddies.csv", options);
 };
 
 module.exports = {

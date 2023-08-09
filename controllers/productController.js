@@ -2,6 +2,7 @@ const db = require("../models");
 const { Op } = require("sequelize");
 
 const Product = db.products;
+const PageContents = db.pageContents;
 
 const getAllProducts = async (req, res) => {
   const products = await Product.findAll({
@@ -95,6 +96,11 @@ const searchProductByKeyword = async (req, res) => {
   res.status(200).json(data);
 };
 
+const retrieveAllContents = async (req, res) => {
+  const contents = await PageContents.findAll({});
+  res.status(200).json(contents);
+};
+
 module.exports = {
   getAllProducts,
   getProducts,
@@ -102,4 +108,5 @@ module.exports = {
   shortProducts,
   getRelatedProducts,
   searchProductByKeyword,
+  retrieveAllContents,
 };

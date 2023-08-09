@@ -10,5 +10,6 @@ router.post(
   productController.shortProducts
 );
 router.post("/search", productController.searchProductByKeyword);
+router.get("/contents", productController.retrieveAllContents);
 
 module.exports = router;

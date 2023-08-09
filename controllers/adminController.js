@@ -261,23 +261,28 @@ const updateFile = async (req, res) => {
 };
 
 const createAllContents = async (req, res) => {
-  console.log(req.body);
   const form = new multiParty.Form({ uploadDir: dir });
   form.parse(req, async function (err, fields, files) {
     if (err) return res.status(500).json({ err: err.message });
-    console.log("fields", fields);
-    console.log("files", files);
-
-    // let imageArray = [];
-    // if (files.file) {
-    //   for (const image of files.file) {
-    //     imageArray.push(process.env.IMAGE_BASE_URL + image.path.slice(7));
-    //   }
-    //   const content = await PageContent.create({
-    //     image: imageArray,
-    //   });
-    //   res.status(201).json({ content });
-    // }
+    let imageArray = [];
+    if (files.logo_path_name) {
+      for (const image of files.logo_path_name) {
+        imageArray.push(process.env.IMAGE_BASE_URL + image.path.slice(7));
+      }
+      const content = await PageContents.create({
+        about_us: fields.about_us[0],
+        contact_us: fields.contact_us[0],
+        acceptable_use_policy: fields.acceptable_use_policy[0],
+        faqs: fields.faqs[0],
+        disclaimer: fields.disclaimer[0],
+        return_refund_cancellection_shipping_policy:
+          fields.return_refund_cancellection_shipping_policy[0],
+        privacy_policy: fields.privacy_policy[0],
+        terms_and_conditions: fields.terms_and_conditions[0],
+        logo_path_name: imageArray,
+      });
+      res.status(201).json({ content });
+    }
   });
   // const {
   //   about_us,

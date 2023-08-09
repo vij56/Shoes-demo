@@ -300,26 +300,51 @@ const deleteOrder = async (req, res) => {
 
 const updateAllContents = async (req, res) => {
   const { id } = req.params;
-  await PageContents.findByPk(id)
-    .then(async contents => {
-      (contents.about_us = req.body.about_us),
-        (contents.contact_us = req.body.contact_us),
-        (contents.acceptable_use_policy = req.body.acceptable_use_policy),
-        (contents.faqs = req.body.faqs),
-        (contents.disclaimer = req.body.disclaimer),
-        (contents.return_refund_cancellection_shipping_policy =
-          req.body.return_refund_cancellection_shipping_policy),
-        (contents.privacy_policy = req.body.privacy_policy),
-        (contents.terms_and_conditions = req.body.terms_and_conditions),
-        (contents.logo_path_name = req.body.logo_path_name),
-        (contents.brand_tagline = req.body.brand_tagline),
-        (contents.brand_favicon = req.body.brand_favicon),
-        await contents.save();
-      return res.status(200).json({ msg: "updated" });
-    })
-    .catch(err => {
-      res.status(500).json({ msg: err.message });
-    });
+  const imageArray = [];
+  const form = new multiParty.Form({ uploadDir: dir });
+  form.parse(req, async function (err, fields, files) {
+    await PageContents.findByPk(id)
+      .then(contents => {
+        if (contents) {
+          if (files.logo_path_name) {
+            for (const image of files.logo_path_name) {
+              imageArray.push(process.env.IMAGE_BASE_URL + image.path.slice(7));
+            }
+            contents.update({
+              about_us: fields.about_us[0],
+              contact_us: fields.contact_us[0],
+              acceptable_use_policy: fields.acceptable_use_policy[0],
+              faqs: fields.faqs[0],
+              disclaimer: fields.disclaimer[0],
+              return_refund_cancellection_shipping_policy:
+                fields.return_refund_cancellection_shipping_policy[0],
+              privacy_policy: fields.privacy_policy[0],
+              terms_and_conditions: fields.terms_and_conditions[0],
+              logo_path_name: imageArray,
+            });
+            return res.status(200).json(contents);
+          }
+          contents.update({
+            about_us: fields.about_us[0],
+            contact_us: fields.contact_us[0],
+            acceptable_use_policy: fields.acceptable_use_policy[0],
+            faqs: fields.faqs[0],
+            disclaimer: fields.disclaimer[0],
+            return_refund_cancellection_shipping_policy:
+              fields.return_refund_cancellection_shipping_policy[0],
+            privacy_policy: fields.privacy_policy[0],
+            terms_and_conditions: fields.terms_and_conditions[0],
+            logo_path_name: files.logo_path_name,
+          });
+          return res.status(200).json(contents);
+        } else {
+          return res.status(404).json({ msg: "no product found" });
+        }
+      })
+      .catch(err => {
+        res.status(500).json({ err: err.message });
+      });
+  });
 };
 
 module.exports = {

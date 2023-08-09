@@ -5,7 +5,7 @@ const { Sequelize, DataTypes } = require("sequelize");
 
 const sequelize = new Sequelize(
   process.env.DATABASE,
-  process.env.USERNAME,
+  process.env.USER,
   process.env.PASSWORD,
   {
     host: "localhost",
@@ -43,6 +43,6 @@ db.pageContents = require("./PageContents.js")(sequelize, DataTypes);
 db.products.hasOne(db.cart);
 db.cart.belongsTo(db.products);
 
-db.sequelize.sync({ force: true }).then(() => console.log("sync is done."));
+db.sequelize.sync().then(() => console.log("sync is done."));
 
 module.exports = db;

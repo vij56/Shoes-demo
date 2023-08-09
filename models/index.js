@@ -23,7 +23,7 @@ const sequelize = new Sequelize(
 sequelize
   .authenticate()
   .then(() => console.log("Connection has been established successfully."))
-  .catch(err => console.error("Unable to connect to the database:", err));
+  .catch((err) => console.error("Unable to connect to the database:", err));
 
 const db = {};
 
@@ -43,6 +43,6 @@ db.pageContents = require("./PageContents.js")(sequelize, DataTypes);
 db.products.hasOne(db.cart);
 db.cart.belongsTo(db.products);
 
-db.sequelize.sync({ force: true }).then(() => console.log("sync is done."));
+db.sequelize.sync().then(() => console.log("sync is done."));
 
 module.exports = db;

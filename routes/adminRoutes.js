@@ -10,7 +10,7 @@ router.post("/product", authentication, adminController.addProduct);
 router.get("/products", authentication, adminController.getAllProducts);
 router.get("/product/:id", authentication, adminController.getSingleProduct);
 router.patch("/product/:id", authentication, adminController.updateProduct);
-router.delete("/product/:id", authentication, adminController.deleteProduct);
+router.post("/deleteProduct", authentication, adminController.deleteProduct);
 router.post(
   "/file/upload",
   authentication,

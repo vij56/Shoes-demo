@@ -261,31 +261,51 @@ const updateFile = async (req, res) => {
 };
 
 const createAllContents = async (req, res) => {
-  const {
-    about_us,
-    contact_us,
-    faqs,
-    disclaimer,
-    return_refund_cancellection_shipping_policy,
-    privacy_policy,
-    terms_and_conditions,
-    logo_path_name,
-    brand_tagline,
-    brand_favicon,
-  } = req.body;
-  const contents = await PageContents.create({
-    about_us,
-    contact_us,
-    faqs,
-    disclaimer,
-    return_refund_cancellection_shipping_policy,
-    privacy_policy,
-    terms_and_conditions,
-    logo_path_name,
-    brand_tagline,
-    brand_favicon,
+  console.log(req.body);
+  const form = new multiParty.Form({ uploadDir: dir });
+  form.parse(req, async function (err, fields, files) {
+    if (err) return res.status(500).json({ err: err.message });
+    console.log("fields", fields);
+    console.log("files", files);
+
+    // let imageArray = [];
+    // if (files.file) {
+    //   for (const image of files.file) {
+    //     imageArray.push(process.env.IMAGE_BASE_URL + image.path.slice(7));
+    //   }
+    //   const content = await PageContent.create({
+    //     image: imageArray,
+    //   });
+    //   res.status(201).json({ content });
+    // }
   });
-  res.status(201).json(contents);
+  // const {
+  //   about_us,
+  //   contact_us,
+  //   acceptable_use_policy,
+  //   faqs,
+  //   disclaimer,
+  //   return_refund_cancellection_shipping_policy,
+  //   privacy_policy,
+  //   terms_and_conditions,
+  //   logo_path_name,
+  //   brand_tagline,
+  //   brand_favicon,
+  // } = req.body;
+  // const contents = await PageContents.create({
+  //   about_us,
+  //   contact_us,
+  //   acceptable_use_policy,
+  //   faqs,
+  //   disclaimer,
+  //   return_refund_cancellection_shipping_policy,
+  //   privacy_policy,
+  //   terms_and_conditions,
+  //   logo_path_name,
+  //   brand_tagline,
+  //   brand_favicon,
+  // });
+  // res.status(201).json(contents);
 };
 
 const retrieveAllContents = async (req, res) => {
@@ -298,7 +318,8 @@ const updateAllContents = async (req, res) => {
   await PageContents.findByPk(id)
     .then(async contents => {
       (contents.about_us = req.body.about_us),
-        (contents.contact_us = req.body.about_us),
+        (contents.contact_us = req.body.contact_us),
+        (contents.acceptable_use_policy = req.body.acceptable_use_policy),
         (contents.faqs = req.body.faqs),
         (contents.disclaimer = req.body.disclaimer),
         (contents.return_refund_cancellection_shipping_policy =

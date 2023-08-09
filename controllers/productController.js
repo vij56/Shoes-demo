@@ -5,13 +5,7 @@ const Product = db.products;
 
 const getAllProducts = async (req, res) => {
   const products = await Product.findAll({
-    // To select only some attributes, you can use the 'attributes' option
-    // attributes: ["image", ["title", "title_name"], "price"], // Attributes can be renamed using a nested array
-    // attributes: { exclude: ["price"] }, // it's also possible to remove a selected few attributes
-    // include: [Sequelize.fn("COUNT", Sequelize.col("id")), "id_counts"], // You can use 'sequelize.fn' to do aggregations
-    // order: [["price", "DESC"]], // The order option takes an array of items to order the query by or a sequelize method. valid directions (such as ASC, DESC, NULLS FIRST, etc).
-    // offset: 1, // allows to work with limiting / pagination
-    limit: 10, // allows to work with limiting / pagination
+    limit: 10,
   });
   res.status(200).json({ products });
 };
@@ -26,7 +20,6 @@ const getRelatedProducts = async (req, res) => {
 const getProducts = async (req, res) => {
   const { limit } = req.body;
   let { offset } = req.body; // page number
-  // The findAndCountAll method is a convenience method that combines findAll and count. This is useful when dealing with queries related to pagination where you want to retrieve data with a limit and offset but also need to know the total number of records that match the query.
   Product.findAndCountAll().then((data) => {
     const pages = Math.ceil(data.count / limit);
     offset = limit * (offset - 1);

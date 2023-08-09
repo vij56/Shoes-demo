@@ -18,12 +18,6 @@ router.post(
   adminController.uploadFile
 );
 // router.patch("/file/upload", upload.single("file"), adminController.updateFile);
-// router.post(
-//   "/file/multiple/upload",
-//   upload.array("files", 99),
-//   adminController.uploadMultipleFiles
-// );
-// router.get("/file/download", authentication, adminController.downloadFile);
 router.post("/contents", authentication, adminController.createAllContents);
 router.get("/contents", authentication, adminController.retrieveAllContents);
 

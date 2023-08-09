@@ -63,7 +63,6 @@ module.exports = (sequelize, DataTypes) => {
     },
     createdAt: {
       type: DataTypes.DATE,
-      //note here this is the guy that you are looking for
       get() {
         return moment(this.getDataValue("createdAt")).format(
           "YYYY/MM/DD hh:mm:ss"

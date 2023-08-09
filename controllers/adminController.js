@@ -98,7 +98,7 @@ const updateProduct = async (req, res) => {
   const form = new multiParty.Form({ uploadDir: dir });
   form.parse(req, async function (err, fields, files) {
     await Product.findByPk(id)
-      .then((product) => {
+      .then(product => {
         if (product) {
           if (files.file) {
             for (const image of files.file) {
@@ -116,6 +116,7 @@ const updateProduct = async (req, res) => {
               size: fields.size.toString(),
               category: fields.category[0],
               attribute: fields.attribute.toString(),
+              skuId: fields.sku[0],
             });
             return res.status(200).json(product);
           }
@@ -128,13 +129,14 @@ const updateProduct = async (req, res) => {
             size: fields.size[0],
             category: fields.category[0],
             attribute: fields.attribute[0],
+            skuId: fields.sku[0],
           });
           return res.status(200).json(product);
         } else {
           return res.status(404).json({ msg: "no product found" });
         }
       })
-      .catch((err) => {
+      .catch(err => {
         res.status(500).json({ err: err.message });
       });
   });
@@ -153,27 +155,65 @@ const uploadFile = async (req, res) => {
   const product = [];
   csv()
     .fromFile(req.file.path)
-    .then(async (result) => {
+    .then(async result => {
       for (i = 0; i < result.length; i++) {
-        const image = result[i].image.split(",");
-        const size = result[i].size.split(",");
-        const attribute = !result[i].attribute
-          ? []
-          : result[i].attribute.split(",");
         product.push({
-          image: image,
+          id: result[i].id,
+          image: result[i].image,
           title: result[i].title,
-          salePrice: parseInt(result[i].salePrice),
+          salePrice: result[i].salePrice,
           description: result[i].description,
           productPrice: result[i].productPrice,
           skuId: result[i].skuId,
           category: result[i].category,
-          size: JSON.stringify(size),
-          attribute: JSON.stringify(attribute),
+          size: result[i].size,
         });
       }
-      const products = await Product.bulkCreate(product);
-      res.status(201).json({ products });
+      for (const item of product) {
+        const foundProduct = await Product.findOne({ where: { id: item.id } });
+        if (foundProduct) {
+          const image = item.image.split(",");
+          const size = item.size.split(",");
+          const attribute = !item.attribute ? [] : item.attribute.split(",");
+          await foundProduct.update({
+            image: image,
+            title: item.title,
+            salePrice: parseInt(item.salePrice),
+            description: item.description,
+            productPrice: item.productPrice,
+            skuId: item.skuId,
+            category: item.category,
+            size: JSON.stringify(size),
+            attribute: JSON.stringify(attribute),
+          });
+        } else {
+          const items = [];
+          for (i = 0; i < result.length; i++) {
+            const image = result[i].image.split(",");
+            const size = result[i].size.split(",");
+            const attribute = !result[i].attribute
+              ? []
+              : result[i].attribute.split(",");
+            items.push({
+              image: image,
+              title: result[i].title,
+              salePrice: parseInt(result[i].salePrice),
+              description: result[i].description,
+              productPrice: result[i].productPrice,
+              skuId: result[i].skuId,
+              category: result[i].category,
+              size: JSON.stringify(size),
+              attribute: JSON.stringify(attribute),
+            });
+          }
+          const products = await Product.bulkCreate(items);
+          return res.status(201).json({ products });
+        }
+      }
+      res.status(200).json({ msg: "products are updated successfully" });
+    })
+    .catch(e => {
+      res.status(500).json({ msg: e.message });
     });
 };
 
@@ -184,7 +224,7 @@ const updateFile = async (req, res) => {
   const product = [];
   csv()
     .fromFile(req.file.path)
-    .then(async (result) => {
+    .then(async result => {
       for (i = 0; i < result.length; i++) {
         product.push({
           id: result[i].id,
@@ -256,7 +296,7 @@ const retrieveAllContents = async (req, res) => {
 const updateAllContents = async (req, res) => {
   const { id } = req.params;
   await PageContents.findByPk(id)
-    .then(async (contents) => {
+    .then(async contents => {
       (contents.about_us = req.body.about_us),
         (contents.contact_us = req.body.about_us),
         (contents.faqs = req.body.faqs),
@@ -271,7 +311,7 @@ const updateAllContents = async (req, res) => {
         await contents.save();
       return res.status(200).json({ msg: "updated" });
     })
-    .catch((err) => {
+    .catch(err => {
       res.status(500).json({ msg: err.message });
     });
 };

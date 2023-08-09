@@ -11,6 +11,7 @@ router.get("/products", authentication, adminController.getAllProducts);
 router.get("/product/:id", authentication, adminController.getSingleProduct);
 router.patch("/product/:id", authentication, adminController.updateProduct);
 router.post("/deleteProduct", authentication, adminController.deleteProduct);
+router.post("/deleteOrder", authentication, adminController.deleteOrder);
 router.post(
   "/file/upload",
   authentication,

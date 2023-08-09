@@ -13,6 +13,7 @@ const ws = fs.createWriteStream("itbuddies.csv");
 const Product = db.products;
 const Admin = db.admin;
 const PageContents = db.pageContents;
+const Order = db.order;
 
 const dir = "./public/images";
 
@@ -284,38 +285,17 @@ const createAllContents = async (req, res) => {
       res.status(201).json({ content });
     }
   });
-  // const {
-  //   about_us,
-  //   contact_us,
-  //   acceptable_use_policy,
-  //   faqs,
-  //   disclaimer,
-  //   return_refund_cancellection_shipping_policy,
-  //   privacy_policy,
-  //   terms_and_conditions,
-  //   logo_path_name,
-  //   brand_tagline,
-  //   brand_favicon,
-  // } = req.body;
-  // const contents = await PageContents.create({
-  //   about_us,
-  //   contact_us,
-  //   acceptable_use_policy,
-  //   faqs,
-  //   disclaimer,
-  //   return_refund_cancellection_shipping_policy,
-  //   privacy_policy,
-  //   terms_and_conditions,
-  //   logo_path_name,
-  //   brand_tagline,
-  //   brand_favicon,
-  // });
-  // res.status(201).json(contents);
 };
 
 const retrieveAllContents = async (req, res) => {
   const contents = await PageContents.findAll({});
   res.status(200).json(contents);
+};
+
+const deleteOrder = async (req, res) => {
+  const { id } = req.body;
+  const product = await Order.destroy({ where: { id: id } });
+  res.status(200).json({ product });
 };
 
 const updateAllContents = async (req, res) => {
@@ -354,4 +334,5 @@ module.exports = {
   createAllContents,
   retrieveAllContents,
   updateAllContents,
+  deleteOrder,
 };

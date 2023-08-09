@@ -20,5 +20,10 @@ router.post(
 // router.patch("/file/upload", upload.single("file"), adminController.updateFile);
 router.post("/contents", authentication, adminController.createAllContents);
 router.get("/contents", authentication, adminController.retrieveAllContents);
+router.patch(
+  "/contents/:id",
+  authentication,
+  adminController.updateAllContents
+);
 
 module.exports = router;

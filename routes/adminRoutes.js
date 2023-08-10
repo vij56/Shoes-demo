@@ -6,10 +6,20 @@ const authentication = require("../middleware/jwtAth.js");
 router.post("/signup", adminController.signUp);
 router.post("/login", adminController.login);
 // router.post("/dummy", authentication, adminController.dummy);
-router.post("/product", authentication, adminController.addProduct);
+router.post(
+  "/product",
+  authentication,
+  upload.array("files[]", 123),
+  adminController.addProduct
+);
 router.get("/products", authentication, adminController.getAllProducts);
 router.get("/product/:id", authentication, adminController.getSingleProduct);
-router.patch("/product/:id", authentication, adminController.updateProduct);
+router.patch(
+  "/product/:id",
+  authentication,
+  upload.array("files[]", 123),
+  adminController.updateProduct
+);
 router.post("/deleteProduct", authentication, adminController.deleteProduct);
 router.post("/deleteOrder", authentication, adminController.deleteOrder);
 router.post(

@@ -57,28 +57,34 @@ const login = async (req, res) => {
 };
 
 const addProduct = async (req, res) => {
-  const form = new multiParty.Form({ uploadDir: dir });
-  form.parse(req, async function (err, fields, files) {
-    if (err) return res.status(500).json({ err: err.message });
-    let imageArray = [];
-    if (files.file) {
-      for (const image of files.file) {
-        imageArray.push(process.env.IMAGE_BASE_URL + image.path.slice(7));
-      }
-      const product = await Product.create({
-        image: imageArray,
-        title: fields.title[0],
-        description: fields.description[0],
-        productPrice: fields.productPrice[0],
-        salePrice: fields.salePrice[0],
-        skuId: fields.sku[0],
-        size: fields.size[0],
-        category: fields.category[0],
-        attribute: fields.attribute?.length > 0 ? fields.attribute[0] : [],
-      });
-      res.status(201).json({ product });
-    }
+  const {
+    title,
+    description,
+    salePrice,
+    productPrice,
+    sku,
+    attribute,
+    size,
+    category,
+  } = req.body;
+  let imageArray = [];
+  console.log("--->", typeof req.files);
+  console.log("----------->", req.files);
+  for (const image of req.files) {
+    imageArray.push(process.env.IMAGE_BASE_URL + image.path.slice(7));
+  }
+  const product = await Product.create({
+    image: imageArray,
+    title,
+    description,
+    salePrice,
+    productPrice,
+    skuId: sku,
+    size,
+    category,
+    attribute: attribute?.length > 0 ? attribute : [],
   });
+  res.status(201).json({ product });
 };
 
 const getAllProducts = async (req, res) => {
@@ -94,53 +100,60 @@ const getSingleProduct = async (req, res) => {
 
 const updateProduct = async (req, res) => {
   const { id } = req.params;
+  const {
+    title,
+    description,
+    salePrice,
+    productPrice,
+    sku,
+    attribute,
+    size,
+    category,
+  } = req.body;
   const imageArray = [];
-  const sizeArray = [];
-  const form = new multiParty.Form({ uploadDir: dir });
-  form.parse(req, async function (err, fields, files) {
-    await Product.findByPk(id)
-      .then(product => {
-        if (product) {
-          if (files.file) {
-            for (const image of files.file) {
-              imageArray.push(
-                ...product.image,
-                process.env.IMAGE_BASE_URL + image.path.slice(7)
-              );
-            }
-            product.update({
-              image: imageArray,
-              title: fields.title[0],
-              description: fields.description[0],
-              productPrice: fields.productPrice[0],
-              salePrice: fields.salePrice[0],
-              size: fields.size.toString(),
-              category: fields.category[0],
-              attribute: fields.attribute.toString(),
-              skuId: fields.sku[0],
-            });
-            return res.status(200).json(product);
+
+  await Product.findByPk(id)
+    .then((product) => {
+      if (product) {
+        if (req.files.length >= 1) {
+          for (const image of req.files) {
+            imageArray.push(
+              ...product.image,
+              process.env.IMAGE_BASE_URL + image.path.slice(7)
+            );
           }
           product.update({
-            image: files.file,
-            title: fields.title[0],
-            description: fields.description[0],
-            productPrice: fields.productPrice[0],
-            salePrice: fields.salePrice[0],
-            size: fields.size[0],
-            category: fields.category[0],
-            attribute: fields.attribute[0],
-            skuId: fields.sku[0],
+            image: imageArray,
+            title: title,
+            description: description,
+            productPrice: productPrice,
+            salePrice: salePrice,
+            size: size.toString(),
+            category: category,
+            attribute: attribute.toString(),
+            skuId: sku,
           });
           return res.status(200).json(product);
         } else {
-          return res.status(404).json({ msg: "no product found" });
+          product.update({
+            title,
+            description,
+            salePrice,
+            productPrice,
+            skuId: sku,
+            attribute,
+            size,
+            category,
+          });
+          return res.status(200).json(product);
         }
-      })
-      .catch(err => {
-        res.status(500).json({ err: err.message });
-      });
-  });
+      } else {
+        return res.status(404).json({ msg: "no product found" });
+      }
+    })
+    .catch((err) => {
+      res.status(500).json({ err: err.message });
+    });
 };
 
 const deleteProduct = async (req, res) => {
@@ -156,7 +169,7 @@ const uploadFile = async (req, res) => {
   const product = [];
   csv()
     .fromFile(req.file.path)
-    .then(async result => {
+    .then(async (result) => {
       for (i = 0; i < result.length; i++) {
         product.push({
           id: result[i].id,
@@ -213,7 +226,7 @@ const uploadFile = async (req, res) => {
       }
       res.status(200).json({ msg: "products are updated successfully" });
     })
-    .catch(e => {
+    .catch((e) => {
       res.status(500).json({ msg: e.message });
     });
 };
@@ -225,7 +238,7 @@ const updateFile = async (req, res) => {
   const product = [];
   csv()
     .fromFile(req.file.path)
-    .then(async result => {
+    .then(async (result) => {
       for (i = 0; i < result.length; i++) {
         product.push({
           id: result[i].id,
@@ -304,7 +317,7 @@ const updateAllContents = async (req, res) => {
   const form = new multiParty.Form({ uploadDir: dir });
   form.parse(req, async function (err, fields, files) {
     await PageContents.findByPk(id)
-      .then(contents => {
+      .then((contents) => {
         if (contents) {
           if (files.logo_path_name) {
             for (const image of files.logo_path_name) {
@@ -341,7 +354,7 @@ const updateAllContents = async (req, res) => {
           return res.status(404).json({ msg: "no product found" });
         }
       })
-      .catch(err => {
+      .catch((err) => {
         res.status(500).json({ err: err.message });
       });
   });

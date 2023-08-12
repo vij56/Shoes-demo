@@ -12,7 +12,8 @@ const createCart = async (req, res) => {
         (item) =>
           item.size == size &&
           item.attribute == attribute &&
-          item.productId == productId
+          item.productId == productId &&
+          item.userId == userId
       );
       let product = result.filter((item) => item.productId == productId);
       if (

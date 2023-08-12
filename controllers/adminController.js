@@ -1,14 +1,8 @@
 const csv = require("csvtojson");
-const data_exporter = require("json2csv").Parser;
 const db = require("../models");
 const multiParty = require("multiparty");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const path = require("path");
-
-const fastcsv = require("fast-csv");
-const fs = require("fs");
-const ws = fs.createWriteStream("itbuddies.csv");
 
 const Product = db.products;
 const Admin = db.admin;
@@ -67,9 +61,7 @@ const addProduct = async (req, res) => {
     size,
     category,
   } = req.body;
-  let imageArray = [];
-  console.log("--->", typeof req.files);
-  console.log("----------->", req.files);
+  const imageArray = [];
   for (const image of req.files) {
     imageArray.push(process.env.IMAGE_BASE_URL + image.path.slice(7));
   }
@@ -111,44 +103,37 @@ const updateProduct = async (req, res) => {
     category,
   } = req.body;
   const imageArray = [];
-
-  await Product.findByPk(id)
+  await Product.findOne({ where: { id: id } })
     .then((product) => {
-      if (product) {
-        if (req.files.length >= 1) {
-          for (const image of req.files) {
-            imageArray.push(
-              ...product.image,
-              process.env.IMAGE_BASE_URL + image.path.slice(7)
-            );
-          }
-          product.update({
-            image: imageArray,
-            title: title,
-            description: description,
-            productPrice: productPrice,
-            salePrice: salePrice,
-            size: size.toString(),
-            category: category,
-            attribute: attribute.toString(),
-            skuId: sku,
-          });
-          return res.status(200).json(product);
-        } else {
-          product.update({
-            title,
-            description,
-            salePrice,
-            productPrice,
-            skuId: sku,
-            attribute,
-            size,
-            category,
-          });
-          return res.status(200).json(product);
+      if (req.files.length >= 1) {
+        for (const image of req.files) {
+          imageArray.push(process.env.IMAGE_BASE_URL + image.path.slice(7));
         }
+        const images = product.image.concat(imageArray);
+        product.update({
+          image: images,
+          title: title,
+          description: description,
+          productPrice: productPrice,
+          salePrice: salePrice,
+          size: size.toString(),
+          category: category,
+          attribute: attribute.toString(),
+          skuId: sku,
+        });
+        return res.status(200).json(product);
       } else {
-        return res.status(404).json({ msg: "no product found" });
+        product.update({
+          title,
+          description,
+          salePrice,
+          productPrice,
+          skuId: sku,
+          attribute,
+          size,
+          category,
+        });
+        return res.status(200).json(product);
       }
     })
     .catch((err) => {
@@ -158,8 +143,8 @@ const updateProduct = async (req, res) => {
 
 const deleteProduct = async (req, res) => {
   const { id } = req.body;
-  const product = await Product.destroy({ where: { id: id } });
-  res.status(200).json({ product });
+  await Product.destroy({ where: { id: id } });
+  res.status(200).json({ msg: "Deleted" });
 };
 
 const uploadFile = async (req, res) => {
@@ -184,7 +169,9 @@ const uploadFile = async (req, res) => {
         });
       }
       for (const item of product) {
-        const foundProduct = await Product.findOne({ where: { id: item.id } });
+        const foundProduct = await Product.findOne({
+          where: { id: parseInt(item.id) },
+        });
         if (foundProduct) {
           const image = item.image.split(",");
           const size = item.size.split(",");
@@ -231,49 +218,6 @@ const uploadFile = async (req, res) => {
     });
 };
 
-const updateFile = async (req, res) => {
-  if (req.file === undefined) {
-    return res.status(400).send("Please upload csv file!");
-  }
-  const product = [];
-  csv()
-    .fromFile(req.file.path)
-    .then(async (result) => {
-      for (i = 0; i < result.length; i++) {
-        product.push({
-          id: result[i].id,
-          image: result[i].image,
-          title: result[i].title,
-          salePrice: result[i].salePrice,
-          description: result[i].description,
-          productPrice: result[i].productPrice,
-          skuId: result[i].skuId,
-          category: result[i].category,
-          size: result[i].size,
-        });
-      }
-      for (const item of product) {
-        const foundProduct = await Product.findOne({ where: { id: item.id } });
-        if (foundProduct) {
-          await foundProduct.update({
-            id: item.id,
-            image: JSON.parse(item.image),
-            title: item.title,
-            salePrice: item.salePrice,
-            description: item.description,
-            productPrice: item.productPrice,
-            skuId: item.skuId,
-            category: item.category,
-            size: item.size,
-          });
-        } else {
-          return res.status(400).json({ msg: "No product found to update" });
-        }
-      }
-      res.status(200).json({ msg: "products are updated successfully" });
-    });
-};
-
 const createAllContents = async (req, res) => {
   const form = new multiParty.Form({ uploadDir: dir });
   form.parse(req, async function (err, fields, files) {
@@ -307,8 +251,8 @@ const retrieveAllContents = async (req, res) => {
 
 const deleteOrder = async (req, res) => {
   const { id } = req.body;
-  const product = await Order.destroy({ where: { id: id } });
-  res.status(200).json({ product });
+  await Order.destroy({ where: { id: id } });
+  res.status(200).json({ msg: "Deleted" });
 };
 
 const updateAllContents = async (req, res) => {

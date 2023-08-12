@@ -7,6 +7,13 @@ require("./models/index.js");
 
 const app = express();
 
+app.use(cors());
+app.use(morgan("tiny"));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use(express.static("public"));
+
 const productRouter = require("./routes/productRoutes.js");
 const cartRouter = require("./routes/cartRoutes.js");
 const orderRouter = require("./routes/orderRoutes.js");
@@ -15,13 +22,6 @@ const advertizeRouter = require("./routes/advertizeRoutes.js");
 const settingsRouter = require("./routes/settingRoutes.js");
 const categoryRouter = require("./routes/categoryRoutes.js");
 const attributesRouter = require("./routes/attributesRoutes.js");
-
-app.use(morgan("tiny"));
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-app.use(express.static("public"));
 
 app.use("/api", productRouter, cartRouter, orderRouter);
 app.use(

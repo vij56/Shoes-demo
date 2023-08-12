@@ -237,6 +237,7 @@ const createAllContents = async (req, res) => {
           fields.return_refund_cancellection_shipping_policy[0],
         privacy_policy: fields.privacy_policy[0],
         terms_and_conditions: fields.terms_and_conditions[0],
+        brand_tagline: fields.brand_tagline[0],
         logo_path_name: imageArray,
       });
       res.status(201).json({ content });
@@ -277,6 +278,7 @@ const updateAllContents = async (req, res) => {
                 fields.return_refund_cancellection_shipping_policy[0],
               privacy_policy: fields.privacy_policy[0],
               terms_and_conditions: fields.terms_and_conditions[0],
+              brand_tagline: fields.brand_tagline[0],
               logo_path_name: imageArray,
             });
             return res.status(200).json(contents);
@@ -291,6 +293,7 @@ const updateAllContents = async (req, res) => {
               fields.return_refund_cancellection_shipping_policy[0],
             privacy_policy: fields.privacy_policy[0],
             terms_and_conditions: fields.terms_and_conditions[0],
+            brand_tagline: fields.brand_tagline[0],
             logo_path_name: files.logo_path_name,
           });
           return res.status(200).json(contents);
